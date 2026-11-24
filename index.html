@@ -192,7 +192,7 @@ function samples(){return[
 let items=null,filter="all",editing=null;
 /* ---------- Versão completa ---------- */
 const FREE_LIMIT=3;
-const BUY_URL=""; // link de checkout da Hotmart
+const BUY_URL="https://pay.hotmart.com/O108636593H"; // link de checkout da Hotmart
 const CODE_HASHES=["6322dd7cb9e4fbacc7e475026ab900ab8457da6ff6ecfee35db97bc2cc38610e"];
 let active=false;try{active=localStorage.getItem("lembra-tudo-ativo")==="1"}catch(e){}
 async function codeOk(c){c=c.trim().toUpperCase().replace(/\s+/g,"");if(!c)return false;

@@ -1,5 +1,5 @@
 // Lembra Tudo service worker: offline cache + background checks for due items.
-const CACHE = "lembra-tudo-v2";
+const CACHE = "lembra-tudo-v3";
 const ASSETS = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png"];
 const DAY = 86400000;
 
@@ -11,11 +11,12 @@ self.addEventListener("activate", e => {
 });
 self.addEventListener("fetch", e => {
   if (e.request.method !== "GET") return;
-  e.respondWith(caches.match(e.request).then(hit => hit || fetch(e.request).then(res => {
+  // Network first so updates arrive; cache as fallback for offline use.
+  e.respondWith(fetch(e.request).then(res => {
     const copy = res.clone();
     caches.open(CACHE).then(c => c.put(e.request, copy)).catch(() => {});
     return res;
-  }).catch(() => caches.match("./index.html"))));
+  }).catch(() => caches.match(e.request, { ignoreSearch: true }).then(hit => hit || caches.match("./index.html"))));
 });
 
 // Minimal IndexedDB access (the page mirrors its data here so the worker can read it).

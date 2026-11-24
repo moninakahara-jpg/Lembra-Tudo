@@ -41,7 +41,7 @@ header{display:flex;align-items:center;justify-content:space-between;gap:12px;fl
 .logo{width:38px;height:38px;border-radius:11px;background:var(--accent);display:grid;place-items:center;color:var(--accent-ink);font:800 20px var(--display)}
 h1{font:800 26px/1 var(--display);margin:0;letter-spacing:-.01em}
 .tag{color:var(--muted);font-size:13px;margin:2px 0 0}
-.badge{font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:4px 10px}
+.badge{background:none;cursor:pointer;font-family:var(--body);font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:4px 10px}
 .summary{margin-top:18px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
 .stat{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px}
 .stat b{display:block;font:800 24px/1.1 var(--display);font-variant-numeric:tabular-nums}
@@ -83,6 +83,9 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 .alerts .btns{display:flex;gap:8px;flex-wrap:wrap}
 .alerts .btn{font-size:14px;padding:8px 12px}
 .alerts .on{color:var(--ok);font-weight:600}
+.paytext{color:var(--muted);margin:0 0 14px}
+.buy{display:block;text-align:center;text-decoration:none;margin-bottom:16px}
+.payerr{color:var(--late);font-size:13px;margin:8px 0 0}
 .foot{margin-top:28px;font-size:12px;color:var(--muted);text-align:center}
 @media (max-width:420px){.grid{grid-template-columns:1fr}.stat b{font-size:20px}}
 </style>
@@ -95,7 +98,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
       <div class="logo" aria-hidden="true">L</div>
       <div><h1>Lembra Tudo</h1><p class="tag">Nada vence sem você saber.</p></div>
     </div>
-    <span class="badge">Protótipo · US$5 único</span>
+    <button type="button" class="badge" id="planBadge">Versão gratuita</button>
   </header>
 
   <section class="summary" aria-label="Resumo">
@@ -125,6 +128,17 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 </div>
 
 <button class="fab" id="addBtn" type="button">+ Adicionar</button>
+
+<div class="sheet-bg" id="payBg" hidden>
+  <form class="sheet" id="payForm" aria-labelledby="payTitle">
+    <h2 id="payTitle">Libere o Lembra Tudo completo</h2>
+    <p class="paytext" id="payText">A versão gratuita guarda até 3 lembretes. Com a versão completa você cadastra quantos quiser, para sempre, por um pagamento único de US$5.</p>
+    <a class="btn primary buy" id="buyLink" href="#" target="_blank" rel="noopener" hidden>Comprar por US$5</a>
+    <label>Já comprou? Digite o código que você recebeu<input id="payCode" autocomplete="off" autocapitalize="characters" placeholder="LT-XXXX-XXXX-XXXX"></label>
+    <p class="payerr" id="payErr" hidden>Código não reconhecido. Confira as letras e os traços.</p>
+    <div class="row"><button type="button" class="btn" id="payClose">Agora não</button><button type="submit" class="btn primary">Ativar</button></div>
+  </form>
+</div>
 
 <div class="sheet-bg" id="sheetBg" hidden>
   <form class="sheet" id="form" aria-labelledby="formTitle">
@@ -176,6 +190,20 @@ function samples(){return[
 ].map((x,i)=>({...x,id:"ex"+i,example:true}))}
 
 let items=null,filter="all",editing=null;
+/* ---------- Versão completa ---------- */
+const FREE_LIMIT=3;
+const BUY_URL=""; // link de checkout da Hotmart
+const CODE_HASHES=["6322dd7cb9e4fbacc7e475026ab900ab8457da6ff6ecfee35db97bc2cc38610e"];
+let active=false;try{active=localStorage.getItem("lembra-tudo-ativo")==="1"}catch(e){}
+async function codeOk(c){c=c.trim().toUpperCase().replace(/\s+/g,"");if(!c)return false;
+  try{const h=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(c));
+    const hex=[...new Uint8Array(h)].map(b=>b.toString(16).padStart(2,"0")).join("");return CODE_HASHES.includes(hex)}catch(e){return false}}
+function activate(){active=true;try{localStorage.setItem("lembra-tudo-ativo","1")}catch(e){}updatePlan()}
+function updatePlan(){if(typeof planBadge==="undefined")return;
+  const used=(items||[]).filter(i=>!i.example).length;
+  planBadge.textContent=active?"Versão completa":`Grátis · ${Math.min(used,FREE_LIMIT)} de ${FREE_LIMIT}`}
+function openPay(msg){payText.textContent=msg||"A versão gratuita guarda até 3 lembretes. Com a versão completa você cadastra quantos quiser, para sempre, por um pagamento único de US$5.";
+  payErr.hidden=true;payCode.value="";buyLink.hidden=!BUY_URL;if(BUY_URL)buyLink.href=BUY_URL;payBg.hidden=false}
 try{items=JSON.parse(localStorage.getItem(KEY))}catch(e){}
 if(!Array.isArray(items))items=samples();
 function idb(mode,fn){return new Promise((res,rej)=>{try{const o=indexedDB.open("lembra-tudo",1);
@@ -234,6 +262,9 @@ delBtn.onclick=()=>{items=items.filter(i=>i!==editing);save();closeForm();render
 form.addEventListener("submit",e=>{e.preventDefault();
   const data={name:fName.value.trim(),type:fType.value,date:fDate.value,cost:parseFloat(fCost.value)||0,repeat:fRepeat.value,warn:+fWarn.value};
   if(!data.name||!data.date)return;
+  const mine=items.filter(i=>!i.example).length;
+  const growing=!editing||editing.example;
+  if(!active&&growing&&mine>=FREE_LIMIT){closeForm();openPay("Você chegou ao limite de 3 lembretes da versão gratuita. Libere a versão completa para cadastrar quantos quiser.");return}
   if(editing){Object.assign(editing,data,{example:false})}else items.push({...data,id:"i"+Date.now()});
   save();closeForm();render()});
 clearEx.onclick=()=>{items=items.filter(i=>!i.example);save();render()};
@@ -242,6 +273,18 @@ document.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)r
   if(b.dataset.edit)openForm(items.find(i=>i.id===b.dataset.edit));
   if(b.dataset.renew){const it=items.find(i=>i.id===b.dataset.renew);renew(it);save();render()}});
 render();save();
+updatePlan();
+const _render=render;render=function(){_render();updatePlan()};
+planBadge.onclick=()=>{if(!active)openPay()};
+payClose.onclick=()=>{payBg.hidden=true};
+payBg.addEventListener("click",e=>{if(e.target===payBg)payBg.hidden=true});
+payForm.addEventListener("submit",async e=>{e.preventDefault();
+  if(await codeOk(payCode.value)){activate();payBg.hidden=true;alertText.textContent="Versão completa ativada. Obrigado pela compra!"}else payErr.hidden=false});
+// Link de ativação: .../#ativar-LT-XXXX-XXXX-XXXX
+(async()=>{const m=location.hash.match(/^#ativar-(.+)$/);if(!m)return;
+  history.replaceState(null,"",location.pathname);
+  if(await codeOk(decodeURIComponent(m[1]))){activate();alertText.textContent="Versão completa ativada. Obrigado pela compra!"}
+  else openPay("Esse link de ativação não funcionou. Digite o código abaixo.")})();
 
 /* ---------- Avisos no celular ---------- */
 const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);

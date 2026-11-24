@@ -1,0 +1,67 @@
+// Lembra Tudo service worker: offline cache + background checks for due items.
+const CACHE = "lembra-tudo-v2";
+const ASSETS = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png"];
+const DAY = 86400000;
+
+self.addEventListener("install", e => {
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting()));
+});
+self.addEventListener("activate", e => {
+  e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim()));
+});
+self.addEventListener("fetch", e => {
+  if (e.request.method !== "GET") return;
+  e.respondWith(caches.match(e.request).then(hit => hit || fetch(e.request).then(res => {
+    const copy = res.clone();
+    caches.open(CACHE).then(c => c.put(e.request, copy)).catch(() => {});
+    return res;
+  }).catch(() => caches.match("./index.html"))));
+});
+
+// Minimal IndexedDB access (the page mirrors its data here so the worker can read it).
+function idb(mode, fn) {
+  return new Promise((resolve, reject) => {
+    const open = indexedDB.open("lembra-tudo", 1);
+    open.onupgradeneeded = () => open.result.createObjectStore("kv");
+    open.onerror = () => reject(open.error);
+    open.onsuccess = () => {
+      const tx = open.result.transaction("kv", mode);
+      const req = fn(tx.objectStore("kv"));
+      tx.oncomplete = () => resolve(req && req.result);
+      tx.onerror = () => reject(tx.error);
+    };
+  });
+}
+
+function daysLeft(date) {
+  const t = new Date(); t.setHours(0, 0, 0, 0);
+  return Math.round((new Date(date + "T00:00:00") - t) / DAY);
+}
+
+async function checkDue() {
+  const items = (await idb("readonly", s => s.get("items"))) || [];
+  const sent = (await idb("readonly", s => s.get("sent"))) || {};
+  const todayKey = new Date().toISOString().slice(0, 10);
+  const due = items.filter(i => !i.example && daysLeft(i.date) <= (i.warn ?? 7) && sent[i.id] !== todayKey);
+  for (const it of due) {
+    const d = daysLeft(it.date);
+    const when = d < 0 ? `venceu há ${-d} dia${d === -1 ? "" : "s"}` : d === 0 ? "vence hoje" : d === 1 ? "vence amanhã" : `vence em ${d} dias`;
+    await self.registration.showNotification(`${it.name} ${when}`, {
+      body: "Toque para abrir o Lembra Tudo.",
+      icon: "icon-192.png", badge: "icon-192.png", tag: "lt-" + it.id, data: { url: "./" }
+    });
+    sent[it.id] = todayKey;
+  }
+  await idb("readwrite", s => s.put(sent, "sent"));
+  return due.length;
+}
+
+// Android Chrome (installed app): the browser wakes the worker about once a day.
+self.addEventListener("periodicsync", e => { if (e.tag === "lembra-check") e.waitUntil(checkDue()); });
+// The page asks for a check whenever it opens.
+self.addEventListener("message", e => { if (e.data === "check") e.waitUntil(checkDue()); });
+
+self.addEventListener("notificationclick", e => {
+  e.notification.close();
+  e.waitUntil(self.clients.matchAll({ type: "window" }).then(list => list.length ? list[0].focus() : self.clients.openWindow("./")));
+});

@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lembra Tudo</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Avisa antes de vencerem assinaturas, documentos, garantias e contas. US$ 5, pagamento único. Sem cadastro, sem mensalidade, funciona offline.">
+<meta property="og:title" content="Lembra Tudo: nunca mais pague por uma assinatura esquecida">
+<meta property="og:description" content="Avisa antes de vencer assinaturas, RG, CNH, passaporte, garantias e contas. US$ 5 uma vez só.">
+<meta name="theme-color" content="#16213A">
+<link rel="icon" href="../icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: navy hero with a phone "vencimentos" card, then one calm column of sections; yellow is reserved for the buy buttons and the warning dots */
+:root{
+  --bg:#F3F5F8; --surface:#FFFFFF; --ink:#16213A; --muted:#55617B; --line:#DCE1EA;
+  --navy:#16213A; --navy-2:#1F2C4B; --on-navy:#EAEFF8; --on-navy-muted:#A9B4CC;
+  --accent:#F2B705; --accent-ink:#2A2100;
+  --late:#C8341F; --soon:#B86E00; --ok:#1E7F55;
+  --late-bg:#FBE7E3; --soon-bg:#FDF1DB; --ok-bg:#E2F3EA;
+  --display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --body:"Figtree","Segoe UI",system-ui,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E1424; --surface:#172036; --ink:#EAEFF8; --muted:#9AA6BF; --line:#2A3550;
+  --navy:#0A0F1C; --navy-2:#172036; --on-navy:#EAEFF8; --on-navy-muted:#9AA6BF;
+  --accent:#F5C534; --accent-ink:#231B00;
+  --late:#FF8A74; --soon:#F5B54A; --ok:#5CCB98;
+  --late-bg:#3A1C1A; --soon-bg:#35290F; --ok-bg:#12332A; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E1424; --surface:#172036; --ink:#EAEFF8; --muted:#9AA6BF; --line:#2A3550;
+  --navy:#0A0F1C; --navy-2:#172036; --on-navy:#EAEFF8; --on-navy-muted:#9AA6BF;
+  --accent:#F5C534; --accent-ink:#231B00;
+  --late:#FF8A74; --soon:#F5B54A; --ok:#5CCB98;
+  --late-bg:#3A1C1A; --soon-bg:#35290F; --ok-bg:#12332A; color-scheme:dark}
+*{box-sizing:border-box}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.55}
+[hidden]{display:none!important}
+img{max-width:100%}
+a{color:inherit}
+.in{max-width:1080px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0}
+h2{font-weight:800;font-size:clamp(28px,4.2vw,42px);line-height:1.08;letter-spacing:-.015em}
+h3{font-weight:600;font-size:20px;line-height:1.2}
+p{margin:0}
+.eyebrow{font:700 13px var(--body);letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.lead{font-size:19px;color:var(--muted);max-width:60ch}
+
+/* Buy button */
+.buy{display:inline-flex;align-items:center;gap:10px;background:var(--accent);color:var(--accent-ink);font:700 18px var(--body);text-decoration:none;border-radius:14px;padding:16px 26px;box-shadow:0 2px 0 rgba(0,0,0,.18);transition:transform .15s ease,box-shadow .15s ease}
+.buy:hover{transform:translateY(-1px);box-shadow:0 4px 0 rgba(0,0,0,.18)}
+.buy:focus-visible,.chip:focus-visible,summary:focus-visible,.top-buy:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.buy small{font-weight:600;opacity:.75;font-size:14px}
+.pay{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:14px;color:var(--on-navy-muted);margin-top:14px}
+.pay span{display:inline-flex;align-items:center;gap:6px}
+.pay span::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent)}
+
+/* Hero */
+.hero{background:var(--navy);color:var(--on-navy);margin-top:calc(-1 * env(safe-area-inset-top,0px));padding-top:env(safe-area-inset-top,0px)}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:18px}
+.brand{display:flex;align-items:center;gap:10px;font:800 21px var(--display)}
+.logo{width:36px;height:36px;border-radius:10px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font:800 19px var(--display)}
+.top-buy{font:700 15px var(--body);color:var(--on-navy);text-decoration:none;border:1.5px solid rgba(234,239,248,.35);border-radius:999px;padding:8px 16px;white-space:nowrap}
+.top-buy:hover{border-color:var(--accent);color:var(--accent)}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:48px;align-items:center;padding-block:40px 72px}
+.hero h1{font-weight:800;font-size:clamp(38px,6.2vw,66px);line-height:1;letter-spacing:-.025em}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero .lead{color:var(--on-navy-muted);margin-top:20px}
+.hero .cta{margin-top:30px}
+
+/* Phone mock */
+.phone{background:var(--bg);color:var(--ink);border-radius:30px;padding:18px 16px 20px;border:8px solid #050913;max-width:340px;margin-left:auto;box-shadow:0 30px 60px rgba(0,0,0,.35);transform:rotate(1.5deg)}
+.phone .pt{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px}
+.phone .pt b{font:800 18px var(--display)}
+.phone .pt span{font-size:12px;color:var(--muted)}
+.sum{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.sum div{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:9px 10px}
+.sum b{display:block;font:800 19px/1.1 var(--display);font-variant-numeric:tabular-nums}
+.sum span{font-size:11px;color:var(--muted)}
+.item{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 11px;margin-top:7px}
+.item .t{flex:1;min-width:0}
+.item .t b{display:block;font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item .t span{font-size:12px;color:var(--muted)}
+.pill{font-size:11px;font-weight:700;border-radius:999px;padding:3px 8px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.pill.late{background:var(--late-bg);color:var(--late)}
+.pill.soon{background:var(--soon-bg);color:var(--soon)}
+.pill.ok{background:var(--ok-bg);color:var(--ok)}
+.item:first-of-type{animation:nudge 2.8s ease-in-out 1s 2}
+@keyframes nudge{0%,100%{transform:none}8%{transform:translateX(-3px)}16%{transform:translateX(3px)}24%{transform:none}}
+
+/* Sections */
+section{padding-block:80px}
+.sec-head{display:grid;gap:14px;max-width:720px;margin-bottom:36px}
+
+/* Math */
+.math{background:var(--surface);border-block:1px solid var(--line)}
+.math-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px;align-items:start}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.chip{font:600 15px var(--body);border:1.5px solid var(--line);background:var(--bg);color:var(--ink);border-radius:999px;padding:9px 15px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.receipt{background:var(--bg);border:1px solid var(--line);border-radius:18px;padding:26px;font-variant-numeric:tabular-nums}
+.row{display:flex;justify-content:space-between;gap:16px;padding-block:10px;border-bottom:1px dashed var(--line);font-size:16px}
+.row span:first-child{color:var(--muted)}
+.row b{font-weight:700}
+.row.big{border-bottom:0;padding-top:16px;align-items:baseline}
+.row.big span:first-child{color:var(--ink);font-weight:600}
+.row.big b{font:800 34px/1 var(--display);color:var(--late)}
+.receipt .note{font-size:14px;color:var(--muted);margin-top:14px}
+.receipt .verdict{margin-top:18px;background:var(--ok-bg);color:var(--ok);border-radius:12px;padding:12px 14px;font-weight:600;font-size:15px}
+
+/* Categories */
+.cats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.cat{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px;display:grid;gap:8px;align-content:start}
+.cat .ic{width:42px;height:42px;border-radius:12px;background:var(--bg);display:grid;place-items:center;margin-bottom:6px}
+.cat .ic svg{width:22px;height:22px;stroke:var(--ink);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.cat p{color:var(--muted);font-size:15px}
+.cat.wide{grid-column:span 1}
+.cat.over{background:var(--navy);color:var(--on-navy);border-color:var(--navy)}
+.cat.over p{color:var(--on-navy-muted)}
+.cat.over b{font:800 40px/1 var(--display);color:var(--accent);font-variant-numeric:tabular-nums}
+
+/* Steps */
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px;counter-reset:s}
+.step{display:grid;gap:8px;align-content:start;counter-increment:s}
+.step::before{content:counter(s);font:800 15px var(--display);width:34px;height:34px;border-radius:50%;border:2px solid var(--ink);display:grid;place-items:center;margin-bottom:6px}
+.step p{color:var(--muted);font-size:16px}
+
+/* Privacy */
+.priv{background:var(--navy);color:var(--on-navy)}
+.priv .eyebrow{color:var(--on-navy-muted)}
+.priv .lead{color:var(--on-navy-muted)}
+.priv-list{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px;margin-top:40px}
+.priv-list div{border-top:2px solid var(--accent);padding-top:14px;display:grid;gap:6px}
+.priv-list b{font:600 19px var(--display)}
+.priv-list span{font-size:15px;color:var(--on-navy-muted)}
+
+/* Price */
+.price-card{background:var(--surface);border:1px solid var(--line);border-radius:24px;padding:40px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px;align-items:center}
+.price{font:800 clamp(64px,9vw,96px)/.9 var(--display);letter-spacing:-.03em}
+.price sup{font-size:.36em;vertical-align:top;position:relative;top:.35em;margin-right:4px;letter-spacing:0}
+.price-sub{font-size:18px;color:var(--muted);margin-top:10px}
+.checks{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.checks li{display:flex;gap:12px;align-items:flex-start}
+.checks li::before{content:"";flex:none;width:20px;height:20px;margin-top:3px;border-radius:6px;background:var(--ok-bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5 10.5l3 3 7-7' fill='none' stroke='%231E7F55' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/16px no-repeat}
+.price-card .pay{color:var(--muted)}
+.guarantee{margin-top:18px;font-size:15px;color:var(--muted)}
+.guarantee b{color:var(--ink)}
+
+/* FAQ */
+.faq{max-width:760px}
+details{border-bottom:1px solid var(--line)}
+summary{cursor:pointer;list-style:none;padding:20px 36px 20px 0;font:600 18px var(--body);position:relative}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";position:absolute;right:4px;top:16px;font:600 26px var(--display);color:var(--muted);transition:transform .2s}
+details[open] summary::after{transform:rotate(45deg)}
+details p{padding:0 0 22px;color:var(--muted);max-width:65ch}
+
+/* Final */
+.final{text-align:center;padding-block:90px}
+.final h2{max-width:18ch;margin:0 auto}
+.final .lead{margin:16px auto 30px}
+footer{border-top:1px solid var(--line);padding-block:28px;font-size:14px;color:var(--muted)}
+footer .in{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+
+@media (max-width:860px){
+  .hero-grid,.math-grid,.price-card{grid-template-columns:minmax(0,1fr)}
+  .hero-grid{gap:44px;padding-block:24px 60px}
+  .phone{margin:0 auto;transform:none}
+  .cats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .steps{grid-template-columns:minmax(0,1fr)}
+  .priv-list{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .price-card{padding:28px}
+  section{padding-block:60px}
+}
+@media (max-width:520px){
+  body{font-size:16px}
+  .cats,.priv-list{grid-template-columns:minmax(0,1fr)}
+  .buy{width:100%;justify-content:center}
+  .top-buy{padding:7px 12px;font-size:14px}
+}
+</style>
+</head>
+<body>
+
+<!--
+  LINK DE PAGAMENTO
+  Troque o endereço abaixo pelo link de checkout da Hotmart ou do Gumroad.
+  Todos os botões "Comprar" da página usam este mesmo link.
+-->
+<script>window.CHECKOUT_URL = "https://pay.hotmart.com/O108636593H";</script>
+
+<header class="hero">
+  <div class="in">
+    <nav class="bar" aria-label="Topo">
+      <div class="brand"><span class="logo" aria-hidden="true">L</span>Lembra Tudo</div>
+      <a class="top-buy" data-buy href="#preco">Comprar · US$ 5</a>
+    </nav>
+
+    <div class="hero-grid">
+      <div>
+        <h1>Nunca mais pague por uma assinatura <em>que você esqueceu.</em></h1>
+        <p class="lead">O Lembra Tudo avisa antes de vencer o streaming, o teste grátis, a CNH, o passaporte, a garantia da geladeira e a conta de luz. Você paga uma vez e ele trabalha para sempre.</p>
+        <div class="cta">
+          <a class="buy" data-buy href="#preco">Quero o Lembra Tudo <small>US$ 5</small></a>
+          <div class="pay"><span>Pagamento único</span><span>Pix ou cartão</span><span>Garantia de 7 dias</span></div>
+        </div>
+      </div>
+
+      <div class="phone" role="img" aria-label="Tela do app mostrando o que vence nos próximos dias">
+        <div class="pt"><b>Lembra Tudo</b><span>Próximos 30 dias</span></div>
+        <div class="sum">
+          <div><b>R$ 187,60</b><span>assinaturas por mês</span></div>
+          <div><b>5</b><span>vencem em 30 dias</span></div>
+        </div>
+        <div class="item"><div class="t"><b>Teste grátis do app de música</b><span>Vira R$ 21,90/mês</span></div><span class="pill late">amanhã</span></div>
+        <div class="item"><div class="t"><b>Streaming de filmes</b><span>R$ 55,90 · renova sozinho</span></div><span class="pill soon">em 3 dias</span></div>
+        <div class="item"><div class="t"><b>Garantia da geladeira</b><span>Ligar para a loja antes</span></div><span class="pill soon">em 12 dias</span></div>
+        <div class="item"><div class="t"><b>CNH</b><span>Agendar renovação</span></div><span class="pill ok">em 24 dias</span></div>
+        <div class="item"><div class="t"><b>Vacina da gripe</b><span>Lembrete de saúde</span></div><span class="pill ok">em 29 dias</span></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="math" aria-labelledby="math-t">
+    <div class="in math-grid">
+      <div class="sec-head" style="margin-bottom:0">
+        <span class="eyebrow">A conta é simples</span>
+        <h2 id="math-t">Ele se paga cancelando uma única assinatura esquecida.</h2>
+        <p class="lead">Quase todo mundo tem uma cobrança que renova todo mês sem ninguém usar. Escolha uma e veja quanto ela custa em um ano.</p>
+        <div class="chips" role="group" aria-label="Escolha uma assinatura">
+          <button class="chip" id="c1" type="button" data-name="Streaming de filmes" data-price="55.90" aria-pressed="true">Streaming · R$ 55,90</button>
+          <button class="chip" id="c2" type="button" data-name="App de música" data-price="21.90" aria-pressed="false">Música · R$ 21,90</button>
+          <button class="chip" id="c3" type="button" data-name="Academia" data-price="119.90" aria-pressed="false">Academia · R$ 119,90</button>
+          <button class="chip" id="c4" type="button" data-name="Armazenamento na nuvem" data-price="9.90" aria-pressed="false">Nuvem · R$ 9,90</button>
+        </div>
+      </div>
+      <div class="receipt" aria-live="polite">
+        <div class="row"><span>Assinatura esquecida</span><b id="r-name">Streaming de filmes</b></div>
+        <div class="row"><span>Cobrança mensal</span><b id="r-month">R$ 55,90</b></div>
+        <div class="row"><span>Meses sem perceber</span><b>12</b></div>
+        <div class="row big"><span>Dinheiro jogado fora</span><b id="r-year">R$ 670,80</b></div>
+        <p class="verdict" id="r-verdict">O Lembra Tudo custa US$ 5, uma vez. Isso é menos do que um único mês dessa assinatura.</p>
+        <p class="note">Valores de exemplo, em reais. No Brasil, US$ 5 sai por cerca de R$ 30 conforme o câmbio do dia.</p>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="cats-t">
+    <div class="in">
+      <div class="sec-head">
+        <span class="eyebrow">O que ele lembra</span>
+        <h2 id="cats-t">Tudo que vence e ninguém lembra até ser tarde.</h2>
+      </div>
+      <div class="cats">
+        <div class="cat">
+          <div class="ic"><svg viewBox="0 0 24 24"><path d="M4 7h16v11H4z"/><path d="M8 3l4 4 4-4"/></svg></div>
+          <h3>Assinaturas</h3>
+          <p>Streaming, música, apps, academia e testes grátis que viram cobrança. Mostra quanto você gasta por mês somando tudo.</p>
+        </div>
+        <div class="cat">
+          <div class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="12" r="2.5"/><path d="M14 10h4M14 14h4"/></svg></div>
+          <h3>Documentos</h3>
+          <p>RG, CNH, passaporte, CRLV, visto e cartão de cidadão. Avisa com antecedência para dar tempo de agendar.</p>
+        </div>
+        <div class="cat">
+          <div class="ic"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg></div>
+          <h3>Garantias</h3>
+          <p>Celular, geladeira, notebook e TV. Lembra antes de acabar, enquanto o conserto ainda é de graça.</p>
+        </div>
+        <div class="cat">
+          <div class="ic"><svg viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg></div>
+          <h3>Contas</h3>
+          <p>Luz, água, internet, IPVA, IPTU e seguro do carro. Chega de multa e juros por esquecimento.</p>
+        </div>
+        <div class="cat">
+          <div class="ic"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.4-7-10a4 4 0 017-2.6A4 4 0 0119 11c0 5.6-7 10-7 10z"/></svg></div>
+          <h3>Saúde</h3>
+          <p>Vacinas, exames de rotina, dentista e receitas que precisam ser renovadas.</p>
+        </div>
+        <div class="cat over">
+          <b>30 dias</b>
+          <h3>Tudo numa tela só</h3>
+          <p>Ao abrir o app, você vê o que vence no próximo mês, do mais urgente para o mais tranquilo.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="priv" aria-labelledby="priv-t">
+    <div class="in">
+      <div class="sec-head" style="margin-bottom:0">
+        <span class="eyebrow">Privacidade</span>
+        <h2 id="priv-t">Seus vencimentos ficam no seu celular. Só nele.</h2>
+        <p class="lead">Não existe conta, senha ou servidor guardando o que você cadastra. Nem a gente consegue ver.</p>
+      </div>
+      <div class="priv-list">
+        <div><b>Sem cadastro</b><span>Abriu, já está usando. Nenhum e-mail pedido.</span></div>
+        <div><b>Funciona offline</b><span>Depois de instalado, não precisa de internet.</span></div>
+        <div><b>Sem anúncios</b><span>Você pagou. Ninguém vai te vender nada lá dentro.</span></div>
+        <div><b>Sem mensalidade</b><span>US$ 5 hoje e mais nada, nunca.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="how-t">
+    <div class="in">
+      <div class="sec-head">
+        <span class="eyebrow">Como funciona</span>
+        <h2 id="how-t">Pronto em dois minutos.</h2>
+      </div>
+      <div class="steps">
+        <div class="step"><h3>Compre com Pix ou cartão</h3><p>O pagamento é feito numa página segura. O acesso chega no seu e-mail logo depois.</p></div>
+        <div class="step"><h3>Coloque na tela inicial</h3><p>Abra o link no celular e toque em "Adicionar à tela inicial". Ele vira um ícone como qualquer outro app.</p></div>
+        <div class="step"><h3>Cadastre o que vence</h3><p>Nome, data e quanto custa. O app avisa antes e também manda os lembretes para a agenda do seu celular, com alarme.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="preco" aria-labelledby="price-t" style="padding-top:0">
+    <div class="in">
+      <div class="price-card">
+        <div>
+          <span class="eyebrow">Preço</span>
+          <h2 id="price-t" class="price"><sup>US$</sup>5</h2>
+          <p class="price-sub">Uma vez. Para sempre. Sem renovação automática.</p>
+          <div style="margin-top:28px"><a class="buy" data-buy href="#preco">Comprar agora <small>US$ 5</small></a></div>
+          <div class="pay"><span>Pix</span><span>Cartão de crédito</span><span>Brasil, Portugal e América Latina</span></div>
+          <p class="guarantee"><b>Garantia de 7 dias.</b> Se não gostar, peça o reembolso dentro de 7 dias e receba o valor de volta.</p>
+        </div>
+        <ul class="checks">
+          <li>Avisos antes de vencer assinaturas, documentos, garantias, contas e saúde</li>
+          <li>Total que você gasta por mês com assinaturas</li>
+          <li>Lista do que vence nos próximos 30 dias</li>
+          <li>Lembretes na agenda do celular, com alarme</li>
+          <li>Funciona em Android e iPhone, sem internet</li>
+          <li>Sem cadastro, sem anúncios, sem mensalidade</li>
+          <li>Atualizações incluídas</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="faq-t" style="padding-top:0">
+    <div class="in">
+      <div class="sec-head"><span class="eyebrow">Dúvidas</span><h2 id="faq-t">Perguntas frequentes</h2></div>
+      <div class="faq">
+        <details><summary>Preciso baixar na loja de aplicativos?</summary><p>Não. O Lembra Tudo abre direto no navegador do celular e pode ser colocado na tela inicial com um toque. Ele fica com ícone próprio e abre em tela cheia, como um app da loja.</p></details>
+        <details><summary>Funciona no iPhone?</summary><p>Sim. Abra o link no Safari, toque em Compartilhar e depois em "Adicionar à Tela de Início". Para receber avisos no iPhone, use o app pela tela inicial ou mande os lembretes para a agenda do celular.</p></details>
+        <details><summary>Como recebo os avisos?</summary><p>De duas formas. O app mostra notificações no celular quando algo está para vencer, e você pode exportar os vencimentos para a agenda do celular com alarmes, que tocam mesmo com o app fechado.</p></details>
+        <details><summary>Tem mensalidade escondida?</summary><p>Não. São US$ 5 uma única vez. Não existe plano pago, renovação automática ou cobrança futura.</p></details>
+        <details><summary>Meus dados vão para algum lugar?</summary><p>Não. Tudo fica guardado no próprio celular. Não há conta, login nem servidor com as suas informações.</p></details>
+        <details><summary>Moro em Portugal ou em outro país da América Latina. Posso comprar?</summary><p>Pode. O pagamento aceita cartão internacional, e o valor é convertido para a sua moeda no momento da compra.</p></details>
+        <details><summary>E se eu não gostar?</summary><p>Você tem 7 dias de garantia. Peça o reembolso pela própria plataforma de pagamento e o dinheiro volta, sem perguntas.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <section class="final" aria-labelledby="final-t">
+    <div class="in">
+      <h2 id="final-t">Quanto você já pagou por algo que esqueceu de cancelar?</h2>
+      <p class="lead">Por US$ 5, isso não acontece mais.</p>
+      <a class="buy" data-buy href="#preco">Comprar o Lembra Tudo <small>US$ 5</small></a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="in">
+    <span>© 2026 Lembra Tudo</span>
+    <span>Pagamento processado pela plataforma de pagamento. Dúvidas sobre a compra são atendidas por ela.</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  // Point every buy button at the checkout link
+  var url = window.CHECKOUT_URL;
+  document.querySelectorAll("[data-buy]").forEach(function(a){
+    a.href = url; a.target = "_blank"; a.rel = "noopener";
+  });
+
+  // Forgotten-subscription calculator
+  var brl = function(n){ return "R$ " + n.toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, "."); };
+  var chips = document.querySelectorAll(".chip");
+  function pick(btn){
+    chips.forEach(function(c){ c.setAttribute("aria-pressed", c === btn ? "true" : "false"); });
+    var p = parseFloat(btn.dataset.price);
+    document.getElementById("r-name").textContent = btn.dataset.name;
+    document.getElementById("r-month").textContent = brl(p);
+    document.getElementById("r-year").textContent = brl(p * 12);
+    var times = Math.floor((p * 12) / 30);
+    document.getElementById("r-verdict").textContent = p >= 30
+      ? "O Lembra Tudo custa US$ 5, uma vez. Isso é menos do que um único mês dessa assinatura."
+      : "O Lembra Tudo custa US$ 5, uma vez. Essa assinatura esquecida pagaria o app " + times + " vezes em um ano.";
+  }
+  chips.forEach(function(c){ c.addEventListener("click", function(){ pick(c); }); });
+})();
+</script>
+</body>
+</html>

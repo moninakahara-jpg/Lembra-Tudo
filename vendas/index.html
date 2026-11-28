@@ -9,7 +9,7 @@
 <meta property="og:title" content="Lembra Tudo: nunca mais pague por uma assinatura esquecida">
 <meta property="og:description" content="Avisa antes de vencer assinaturas, RG, CNH, passaporte, garantias e contas. US$ 5 uma vez só.">
 <meta name="color-scheme" content="light only">
-<meta name="theme-color" content="#F7F6FB">
+<meta name="theme-color" content="#FAF6EE">
 <link rel="icon" href="../icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
@@ -17,11 +17,12 @@
 /* Layout: navy hero with a phone "vencimentos" card, then one calm column of sections; lavender is reserved for the buy buttons and the warning dots */
 :root{
   color-scheme:light;
-  --bg:#F7F6FB; --surface:#FFFFFF; --ink:#34374A; --muted:#767B90; --line:#E9E6F2;
-  --navy:#EEE8FB; --navy-2:#E4F3EC; --on-navy:#34374A; --on-navy-muted:#6C7186;
-  --accent:#CDBDF4; --accent-ink:#2F2652; --accent-strong:#7A5CC9;
-  --late:#B4506A; --soon:#946A17; --ok:#3B8466;
-  --late-bg:#FBE4EA; --soon-bg:#FCF0D2; --ok-bg:#DDF2E8;
+  --yellow:#F7E7A6; --green:#CDEBD4; --purple:#DCCFF5; --blue:#CFE6F7;
+  --bg:#FAF6EE; --surface:#FFFFFF; --ink:#343A46; --muted:#787B84; --line:#ECE4D6;
+  --navy:#DDEEFA; --navy-2:#DCF0E1; --on-navy:#2F3A4A; --on-navy-muted:#5D6878;
+  --accent:#D8CBF4; --accent-ink:#2E2650; --accent-strong:#6E56B8;
+  --late:#B5564F; --soon:#8C6A12; --ok:#3A7D58;
+  --late-bg:#FBE3DF; --soon-bg:#FAEDB9; --ok-bg:#D6EFDC;
   --display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
   --body:"Figtree","Segoe UI",system-ui,sans-serif;
   color-scheme:light;
@@ -43,8 +44,8 @@ p{margin:0}
 .lead{font-size:19px;color:var(--muted);max-width:60ch}
 
 /* Buy button */
-.buy{display:inline-flex;align-items:center;gap:10px;background:var(--accent);color:var(--accent-ink);font:700 18px var(--body);text-decoration:none;border-radius:14px;padding:16px 26px;box-shadow:0 6px 18px rgba(122,92,201,.22);transition:transform .15s ease,box-shadow .15s ease}
-.buy:hover{transform:translateY(-1px);box-shadow:0 8px 22px rgba(122,92,201,.3)}
+.buy{display:inline-flex;align-items:center;gap:10px;background:var(--accent);color:var(--accent-ink);font:700 18px var(--body);text-decoration:none;border-radius:14px;padding:16px 26px;box-shadow:0 6px 18px rgba(110,86,184,.22);transition:transform .15s ease,box-shadow .15s ease}
+.buy:hover{transform:translateY(-1px);box-shadow:0 8px 22px rgba(110,86,184,.3)}
 .buy:focus-visible,.chip:focus-visible,summary:focus-visible,.top-buy:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
 .buy small{font-weight:600;opacity:.75;font-size:14px}
 .pay{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:14px;color:var(--on-navy-muted);margin-top:14px}
@@ -55,7 +56,7 @@ p{margin:0}
 .hero{background:var(--navy);color:var(--on-navy);margin-top:calc(-1 * env(safe-area-inset-top,0px));padding-top:env(safe-area-inset-top,0px)}
 .bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:18px}
 .brand{display:flex;align-items:center;gap:10px;font:800 21px var(--display)}
-.logo{width:36px;height:36px;border-radius:10px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font:800 19px var(--display)}
+.logo{width:36px;height:36px;border-radius:10px;background:var(--yellow);color:var(--accent-ink);display:grid;place-items:center;font:800 19px var(--display)}
 .top-buy{font:700 15px var(--body);color:var(--on-navy);text-decoration:none;border:1.5px solid var(--accent);border-radius:999px;padding:8px 16px;white-space:nowrap}
 .top-buy:hover{background:var(--accent);color:var(--accent-ink)}
 .hero-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:48px;align-items:center;padding-block:40px 72px}
@@ -65,7 +66,7 @@ p{margin:0}
 .hero .cta{margin-top:30px}
 
 /* Phone mock */
-.phone{background:var(--bg);color:var(--ink);border-radius:30px;padding:18px 16px 20px;border:8px solid var(--surface);max-width:340px;margin-left:auto;box-shadow:0 24px 50px rgba(122,92,201,.18);transform:rotate(1.5deg)}
+.phone{background:var(--bg);color:var(--ink);border-radius:30px;padding:18px 16px 20px;border:8px solid var(--surface);max-width:340px;margin-left:auto;box-shadow:0 24px 50px rgba(110,86,184,.18);transform:rotate(1.5deg)}
 .phone .pt{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px}
 .phone .pt b{font:800 18px var(--display)}
 .phone .pt span{font-size:12px;color:var(--muted)}

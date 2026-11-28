@@ -265,9 +265,9 @@ es:{locale:"es",speech:"es-ES",
   alertIntro:"Recibe un aviso en el celular cuando algo esté por vencer.",notifBtn:"Activar avisos en el celular",icsBtn:"Agregar al calendario",
   iosTip:"En iPhone: toca Compartir y luego “Agregar a inicio”. Abre Lembra Tudo desde el ícono y activa los avisos.",
   quickTitle:"Agendar cita",foot:"Tus datos quedan solo en este dispositivo. Sin registro, sin anuncios, sin suscripción.",add:"+ Agregar",
-  payTitle:"Desbloquea Lembra Tudo completo",payText:"La versión gratuita guarda hasta 3 recordatorios. Con la versión completa registras todos los que quieras, para siempre, con un único pago de US$5.",
+  payTitle:"Desbloquea Lembra Tudo completo",payText:"La versión gratuita guarda hasta 3 recordatorios. Con la versión completa registras todos los que quieras, para siempre, con un único pago. Precio de lanzamiento: US$ 6,99 (antes US$ 10,99).",
   payLimit:"Llegaste al límite de 3 recordatorios de la versión gratuita. Desbloquea la versión completa para registrar todos los que quieras.",payBadLink:"Ese enlace de activación no funcionó. Escribe el código abajo.",
-  buy:"Comprar por US$5",payLabel:"¿Ya compraste? Escribe el código que recibiste",payErr:"Código no reconocido. Revisa las letras y los guiones.",notNow:"Ahora no",activate:"Activar",activated:"Versión completa activada. ¡Gracias por tu compra!",
+  buy:"Comprar por US$ 6,99",buyHtml:"Comprar por US$ 6,99 <s style=\"opacity:.6;font-weight:500\">US$ 10,99</s>",payLabel:"¿Ya compraste? Escribe el código que recibiste",payErr:"Código no reconocido. Revisa las letras y los guiones.",notNow:"Ahora no",activate:"Activar",activated:"Versión completa activada. ¡Gracias por tu compra!",
   planFull:"Versión completa",planFree:(u,l)=>`Gratis · ${u} de ${l}`,
   formNew:"Nuevo recordatorio",formNewAppt:"Nueva cita",formEdit:"Editar recordatorio",formEditAppt:"Editar cita",
   mic:"🎤 Hablar",micStop:"■ Parar",listening:"Escuchando…",voiceHint:"Di, por ejemplo: “dentista el viernes a las 3 de la tarde”.",
@@ -300,9 +300,9 @@ en:{locale:"en-US",speech:"en-US",
   alertIntro:"Get a phone alert when something is about to expire.",notifBtn:"Turn on phone alerts",icsBtn:"Add to calendar",
   iosTip:"On iPhone: tap Share, then “Add to Home Screen”. Open Lembra Tudo from the icon and turn on alerts.",
   quickTitle:"Book an appointment",foot:"Your data stays on this device only. No sign-up, no ads, no subscription.",add:"+ Add",
-  payTitle:"Unlock the full Lembra Tudo",payText:"The free version keeps up to 3 reminders. The full version lets you add as many as you want, forever, for a one-time payment of US$5.",
+  payTitle:"Unlock the full Lembra Tudo",payText:"The free version keeps up to 3 reminders. The full version lets you add as many as you want, forever, for a one-time payment. Launch price: US$ 6.99 (was US$ 10.99).",
   payLimit:"You've reached the 3-reminder limit of the free version. Unlock the full version to add as many as you want.",payBadLink:"That activation link didn't work. Type the code below.",
-  buy:"Buy for US$5",payLabel:"Already bought it? Enter the code you received",payErr:"Code not recognized. Check the letters and dashes.",notNow:"Not now",activate:"Activate",activated:"Full version activated. Thanks for your purchase!",
+  buy:"Buy for US$ 6.99",buyHtml:"Buy for US$ 6.99 <s style=\"opacity:.6;font-weight:500\">US$ 10.99</s>",payLabel:"Already bought it? Enter the code you received",payErr:"Code not recognized. Check the letters and dashes.",notNow:"Not now",activate:"Activate",activated:"Full version activated. Thanks for your purchase!",
   planFull:"Full version",planFree:(u,l)=>`Free · ${u} of ${l}`,
   formNew:"New reminder",formNewAppt:"New appointment",formEdit:"Edit reminder",formEditAppt:"Edit appointment",
   mic:"🎤 Speak",micStop:"■ Stop",listening:"Listening…",voiceHint:"Say, for example: “dentist Friday at 3 pm”.",
@@ -335,9 +335,9 @@ zh:{locale:"zh-CN",speech:"zh-CN",
   alertIntro:"快到期时，在手机上收到提醒。",notifBtn:"开启手机提醒",icsBtn:"添加到日历",
   iosTip:"iPhone：点击“分享”，再点“添加到主屏幕”。从图标打开 Lembra Tudo 并开启提醒。",
   quickTitle:"预约安排",foot:"数据只保存在这台设备上。无需注册，没有广告，没有订阅。",add:"+ 添加",
-  payTitle:"解锁完整版 Lembra Tudo",payText:"免费版最多保存3条提醒。完整版可无限添加，永久使用，一次性付款 US$5。",
+  payTitle:"解锁完整版 Lembra Tudo",payText:"免费版最多保存3条提醒。完整版可无限添加，永久使用，一次性付款。首发优惠价：US$ 6.99（原价 US$ 10.99）。",
   payLimit:"你已达到免费版3条提醒的上限。解锁完整版即可无限添加。",payBadLink:"该激活链接无效。请在下方输入激活码。",
-  buy:"US$5 购买",payLabel:"已购买？请输入收到的激活码",payErr:"激活码无法识别。请检查字母和连字符。",notNow:"以后再说",activate:"激活",activated:"完整版已激活，感谢购买！",
+  buy:"US$ 6.99 购买",buyHtml:"US$ 6.99 购买 <s style=\"opacity:.6;font-weight:500\">US$ 10.99</s>",payLabel:"已购买？请输入收到的激活码",payErr:"激活码无法识别。请检查字母和连字符。",notNow:"以后再说",activate:"激活",activated:"完整版已激活，感谢购买！",
   planFull:"完整版",planFree:(u,l)=>`免费 · ${u}/${l}`,
   formNew:"新提醒",formNewAppt:"新预约",formEdit:"编辑提醒",formEditAppt:"编辑预约",
   mic:"🎤 语音输入",micStop:"■ 停止",listening:"正在听…",voiceHint:"例如说：“周五下午3点看牙医”。",
@@ -661,7 +661,7 @@ let alertState="intro";
 function applyLang(){
   L=I18N[LANG];CUR=currency();document.documentElement.lang=L.locale;langSel.value=LANG;
   document.querySelectorAll("[data-i18n]").forEach(el=>{el.textContent=L[el.dataset.i18n]});
-  if(L.buyHtml)buyLink.innerHTML=L.buyHtml;
+  buyLink.innerHTML=L.buyHtml||esc(L.buy);
   document.querySelectorAll("[data-i18n-ph]").forEach(el=>{el.placeholder=L[el.dataset.i18nPh]});
   document.querySelectorAll("[data-i18n-aria]").forEach(el=>{el.setAttribute("aria-label",L[el.dataset.i18nAria])});
   fType.innerHTML=TYPE_KEYS.map(k=>`<option value="${k}">${L.types[k]}</option>`).join("");

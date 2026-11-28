@@ -1,5 +1,5 @@
 // Lembra Tudo service worker: offline cache + background checks for due items.
-const CACHE = "lembra-tudo-v3";
+const CACHE = "lembra-tudo-v4";
 const ASSETS = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png"];
 const DAY = 86400000;
 
@@ -43,7 +43,28 @@ async function checkDue() {
   const items = (await idb("readonly", s => s.get("items"))) || [];
   const sent = (await idb("readonly", s => s.get("sent"))) || {};
   const todayKey = new Date().toISOString().slice(0, 10);
-  const due = items.filter(i => !i.example && daysLeft(i.date) <= (i.warn ?? 7) && sent[i.id] !== todayKey);
+  // Compromissos: cada alerta escolhido (até 3) dispara uma vez, no horário dele.
+  const now = new Date();
+  const AL = { h1: 60, d1: 1440, d2: 2880, d7: 10080 };
+  const LBL = { h1: "em 1 hora", d0: "hoje", d1: "amanhã", d2: "em 2 dias", d7: "em 1 semana" };
+  let count = 0;
+  for (const it of items.filter(i => !i.example && i.type === "appt")) {
+    const start = new Date(it.date + "T" + (it.time || "09:00") + ":00");
+    if (start < now) continue;
+    for (const k of (it.alerts || []).slice(0, 3)) {
+      let at;
+      if (k === "d0") { at = new Date(start); at.setHours(8, 0, 0, 0); if (at > start) at = start; }
+      else at = new Date(start.getTime() - (AL[k] || 0) * 60000);
+      const key = it.id + ":" + k + ":" + it.date + "T" + (it.time || "");
+      if (now >= at && !sent[key]) {
+        await self.registration.showNotification(`${it.name} ${LBL[k] || ""} às ${it.time || "09:00"}`, {
+          body: "Toque para abrir o Lembra Tudo.", icon: "icon-192.png", badge: "icon-192.png", tag: "lt-" + key, data: { url: "./" }
+        });
+        sent[key] = todayKey; count++;
+      }
+    }
+  }
+  const due = items.filter(i => !i.example && i.type !== "appt" && daysLeft(i.date) <= (i.warn ?? 7) && sent[i.id] !== todayKey);
   for (const it of due) {
     const d = daysLeft(it.date);
     const when = d < 0 ? `venceu há ${-d} dia${d === -1 ? "" : "s"}` : d === 0 ? "vence hoje" : d === 1 ? "vence amanhã" : `vence em ${d} dias`;
@@ -54,7 +75,7 @@ async function checkDue() {
     sent[it.id] = todayKey;
   }
   await idb("readwrite", s => s.put(sent, "sent"));
-  return due.length;
+  return due.length + count;
 }
 
 // Android Chrome (installed app): the browser wakes the worker about once a day.

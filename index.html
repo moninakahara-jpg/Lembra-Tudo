@@ -86,6 +86,24 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 .paytext{color:var(--muted);margin:0 0 14px}
 .buy{display:block;text-align:center;text-decoration:none;margin-bottom:16px}
 .payerr{color:var(--late);font-size:13px;margin:8px 0 0}
+.quick{margin-top:12px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:8px}
+.quick h3,.fquick h3{margin:0;font:600 13px var(--body);text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.presets{display:flex;gap:6px;flex-wrap:wrap}
+.preset{font:500 14px var(--body);border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:999px;padding:7px 12px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.preset.add{border-style:dashed;color:var(--muted);background:none}
+.preset .x{font-size:12px;color:var(--muted);padding:0 2px}
+.newpreset{display:flex;gap:6px}
+.newpreset input{flex:1}
+.fquick{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.voice{display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.mic{font:600 14px var(--body);border-radius:999px;padding:9px 14px;cursor:pointer;border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink)}
+.mic[aria-pressed="true"]{background:var(--late);border-color:var(--late);color:#fff}
+.voice small{color:var(--muted);font-size:13px;flex:1;min-width:0}
+.alertpick{display:flex;gap:6px;flex-wrap:wrap}
+.alertpick label{flex-direction:row;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:6px 10px;color:var(--ink);font-size:13px;cursor:pointer;background:var(--bg)}
+.alertpick input{width:auto;padding:0;margin:0}
+.alertpick label:has(input:checked){border-color:var(--ink);background:var(--ink);color:var(--bg)}
+.alertpick label:has(input:disabled:not(:checked)){opacity:.45;cursor:not-allowed}
 .foot{margin-top:28px;font-size:12px;color:var(--muted);text-align:center}
 @media (max-width:420px){.grid{grid-template-columns:1fr}.stat b{font-size:20px}}
 </style>
@@ -121,6 +139,11 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
     <p id="iosTip" hidden>No iPhone: toque em Compartilhar e depois em “Adicionar à Tela de Início”. Abra o Lembra Tudo pelo ícone e ative os avisos.</p>
   </section>
 
+  <section class="quick" aria-label="Agendar compromisso">
+    <h3>Agendar compromisso</h3>
+    <div class="presets" id="mainPresets"></div>
+  </section>
+
   <nav class="filters" aria-label="Filtrar por tipo" id="filters"></nav>
   <main id="groups"></main>
 
@@ -143,17 +166,35 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 <div class="sheet-bg" id="sheetBg" hidden>
   <form class="sheet" id="form" aria-labelledby="formTitle">
     <h2 id="formTitle">Novo lembrete</h2>
+    <div class="voice" id="voiceRow">
+      <button type="button" class="mic" id="micBtn" aria-pressed="false">🎤 Falar</button>
+      <small id="voiceText">Diga, por exemplo: “dentista sexta às 15 horas”.</small>
+    </div>
+    <div class="fquick" id="formQuick">
+      <h3>Compromissos rápidos</h3>
+      <div class="presets" id="formPresets"></div>
+      <div class="newpreset" id="newPresetRow" hidden>
+        <input id="newPresetName" maxlength="30" placeholder="Nome do botão, ex.: Pilates">
+        <button type="button" class="btn" id="newPresetSave">Criar</button>
+      </div>
+    </div>
     <div class="grid">
-      <label class="full">O que vence?<input id="fName" required placeholder="Ex.: Netflix, passaporte, garantia da TV"></label>
+      <label class="full"><span id="fNameLabel">O que vence?</span><input id="fName" required placeholder="Ex.: Netflix, passaporte, garantia da TV"></label>
       <label>Tipo<select id="fType"></select></label>
-      <label>Data de vencimento<input id="fDate" type="date" required></label>
+      <label><span id="fDateLabel">Data de vencimento</span><input id="fDate" type="date" required></label>
+      <label class="apptOnly" hidden>Horário<input id="fTime" type="time" value="09:00"></label>
       <label>Valor (opcional)<input id="fCost" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0,00"></label>
       <label>Repete<select id="fRepeat">
         <option value="none">Não repete</option>
+        <option value="week">Toda semana</option>
         <option value="month">Todo mês</option>
         <option value="year">Todo ano</option>
       </select></label>
-      <label class="full">Avisar com antecedência<select id="fWarn">
+      <div class="full apptOnly" hidden>
+        <label style="margin-bottom:6px">Alertas (até 3)</label>
+        <div class="alertpick" id="fAlerts"></div>
+      </div>
+      <label class="full notAppt">Avisar com antecedência<select id="fWarn">
         <option value="3">3 dias antes</option>
         <option value="7" selected>7 dias antes</option>
         <option value="30">30 dias antes</option>
@@ -170,7 +211,20 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 </div>
 
 <script>
-const TYPES={sub:{l:"Assinatura",i:"📺"},doc:{l:"Documento",i:"🪪"},war:{l:"Garantia",i:"🧾"},bill:{l:"Conta",i:"💡"},health:{l:"Saúde",i:"💊"},other:{l:"Outro",i:"📌"}};
+const TYPES={sub:{l:"Assinatura",i:"📺"},doc:{l:"Documento",i:"🪪"},war:{l:"Garantia",i:"🧾"},bill:{l:"Conta",i:"💡"},health:{l:"Saúde",i:"💊"},appt:{l:"Compromisso",i:"📅"},other:{l:"Outro",i:"📌"}};
+/* ---------- Compromissos ---------- */
+const ALERTS={h1:{l:"1 hora antes",min:60},d0:{l:"No dia, às 8h",min:null},d1:{l:"1 dia antes",min:1440},d2:{l:"2 dias antes",min:2880},d7:{l:"1 semana antes",min:10080}};
+const MAX_ALERTS=3;
+const BASE_PRESETS=["Consulta médica","Dentista","Salão de beleza","Barbearia","Manicure","Exame","Curso","Academia","Banho do pet","Tosa do pet","Veterinário"];
+const PKEY="lembra-tudo-botoes";
+let customPresets=[];try{customPresets=JSON.parse(localStorage.getItem(PKEY))||[]}catch(e){}
+const savePresets=()=>{try{localStorage.setItem(PKEY,JSON.stringify(customPresets))}catch(e){}};
+const isAppt=it=>it.type==="appt";
+// Momento exato de cada alerta de um compromisso
+function alertTimes(it){const start=new Date(it.date+"T"+(it.time||"09:00")+":00");
+  return (it.alerts||[]).map(k=>{if(k==="d0"){const t=new Date(start);t.setHours(8,0,0,0);return{k,at:t>start?start:t}}
+    return{k,at:new Date(start.getTime()-(ALERTS[k]?.min||0)*60000)}})}
+const apptWarnDays=it=>Math.max(0,...(it.alerts||[]).map(k=>k==="d0"||k==="h1"?0:Math.ceil(ALERTS[k].min/1440)));
 const KEY="lembra-tudo-v1";
 const DAY=86400000;
 const today=()=>{const d=new Date();d.setHours(0,0,0,0);return d};
@@ -186,7 +240,9 @@ function samples(){return[
   {name:"Passaporte",type:"doc",date:plus(210),cost:0,repeat:"none",warn:90},
   {name:"Garantia da geladeira",type:"war",date:plus(25),cost:0,repeat:"none",warn:30},
   {name:"IPVA",type:"bill",date:plus(70),cost:1240,repeat:"year",warn:30},
-  {name:"Vacina da gripe",type:"health",date:plus(140),cost:0,repeat:"year",warn:30}
+  {name:"Vacina da gripe",type:"health",date:plus(140),cost:0,repeat:"year",warn:30},
+  {name:"Dentista",type:"appt",date:plus(2),time:"14:30",alerts:["d1","h1"],cost:0,repeat:"none",warn:1},
+  {name:"Barbearia",type:"appt",date:plus(9),time:"10:00",alerts:["d0"],cost:45,repeat:"none",warn:0}
 ].map((x,i)=>({...x,id:"ex"+i,example:true}))}
 
 let items=null,filter="all",editing=null;
@@ -213,11 +269,18 @@ const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(items))}catch(e){}
   idb("readwrite",s=>s.put(items,"items")).catch(()=>{})};
 
 const daysLeft=it=>Math.round((new Date(it.date+"T00:00:00")-today())/DAY);
-function status(it){const d=daysLeft(it);if(d<0)return"late";if(d<=Math.max(it.warn,0))return"soon";return"ok"}
+function status(it){const d=daysLeft(it);
+  if(isAppt(it)){const start=new Date(it.date+"T"+(it.time||"09:00")+":00");if(start<new Date())return"late";return d<=Math.max(apptWarnDays(it),1)?"soon":"ok"}
+  if(d<0)return"late";if(d<=Math.max(it.warn,0))return"soon";return"ok"}
 function label(d){if(d<0)return `venceu há ${-d} dia${d===-1?"":"s"}`;if(d===0)return"vence hoje";if(d===1)return"amanhã";if(d<60)return`em ${d} dias`;const m=Math.round(d/30);return`em ~${m} meses`}
 const fmtDate=s=>new Date(s+"T00:00:00").toLocaleDateString("pt-BR",{day:"2-digit",month:"short",year:"numeric"});
 
-function renew(it){const d=new Date(it.date+"T00:00:00");if(it.repeat==="month")d.setMonth(d.getMonth()+1);else if(it.repeat==="year")d.setFullYear(d.getFullYear()+1);it.date=iso(d)}
+function apptLabel(it){const d=daysLeft(it),t=it.time||"09:00";
+  if(status(it)==="late")return d===0?`foi hoje às ${t}`:`foi há ${-d} dia${d===-1?"":"s"}`;
+  if(d===0)return`hoje às ${t}`;if(d===1)return`amanhã às ${t}`;
+  const wd=new Date(it.date+"T00:00:00").toLocaleDateString("pt-BR",{weekday:"short"}).replace(".","");
+  return d<7?`${wd} às ${t}`:`em ${d} dias`}
+function renew(it){const d=new Date(it.date+"T00:00:00");if(it.repeat==="week")d.setDate(d.getDate()+7);else if(it.repeat==="month")d.setMonth(d.getMonth()+1);else if(it.repeat==="year")d.setFullYear(d.getFullYear()+1);it.date=iso(d)}
 
 function render(){
   const late=items.filter(i=>daysLeft(i)<0).length;
@@ -233,25 +296,39 @@ function render(){
 
   const list=items.filter(i=>filter==="all"||i.type===filter).sort((a,b)=>daysLeft(a)-daysLeft(b));
   if(!list.length){groups.innerHTML=`<div class="empty"><p><b>Nada por aqui ainda.</b></p><p>Toque em “+ Adicionar” e cadastre sua primeira assinatura, documento ou garantia.</p></div>`;return}
-  const sections=[["late","Vencidos"],["soon","Atenção agora"],["ok","Tudo em dia"]];
+  const sections=[["late","Vencidos ou já passaram"],["soon","Atenção agora"],["ok","Tudo em dia"]];
   groups.innerHTML=sections.map(([s,t])=>{
     const rows=list.filter(i=>status(i)===s);if(!rows.length)return"";
     return`<h2>${t}</h2><div class="list">${rows.map(it=>{const d=daysLeft(it),T=TYPES[it.type]||TYPES.other;
-      const rep=it.repeat==="month"?" · mensal":it.repeat==="year"?" · anual":"";
+      const rep=it.repeat==="week"?" · semanal":it.repeat==="month"?" · mensal":it.repeat==="year"?" · anual":"";
+      const appt=isAppt(it);
       const cost=+it.cost?` · ${fmtMoney(+it.cost)}`:"";
       return`<article class="item"><div class="ico" aria-hidden="true">${T.i}</div>
-        <div><h3>${esc(it.name)}${it.example?'<span class="ex">exemplo</span>':""}</h3><div class="meta">${T.l} · ${fmtDate(it.date)}${cost}${rep}</div></div>
-        <div class="when"><span class="pill ${s}">${label(d)}</span><div class="acts">
-          ${it.repeat!=="none"?`<button type="button" data-renew="${it.id}">Renovei</button>`:""}
+        <div><h3>${esc(it.name)}${it.example?'<span class="ex">exemplo</span>':""}</h3><div class="meta">${T.l} · ${fmtDate(it.date)}${appt?" · "+(it.time||"09:00"):""}${cost}${rep}${appt&&it.alerts?.length?" · "+it.alerts.length+" alerta"+(it.alerts.length>1?"s":""):""}</div></div>
+        <div class="when"><span class="pill ${s}">${appt?apptLabel(it):label(d)}</span><div class="acts">
+          ${it.repeat!=="none"?`<button type="button" data-renew="${it.id}">${appt?"Próximo":"Renovei"}</button>`:""}
           <button type="button" data-edit="${it.id}">Editar</button></div></div></article>`}).join("")}</div>`}).join("");
 }
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 
 fType.innerHTML=Object.entries(TYPES).map(([k,v])=>`<option value="${k}">${v.l}</option>`).join("");
 
-function openForm(it){editing=it||null;formTitle.textContent=it?"Editar lembrete":"Novo lembrete";
-  fName.value=it?.name||"";fType.value=it?.type||"sub";fDate.value=it?.date||plus(30);fCost.value=it&&+it.cost?it.cost:"";
-  fRepeat.value=it?.repeat||"none";fWarn.value=String(it?.warn??7);delBtn.hidden=!it;sheetBg.hidden=false;setTimeout(()=>fName.focus(),30)}
+fAlerts.innerHTML=Object.entries(ALERTS).map(([k,v])=>`<label><input type="checkbox" id="al-${k}" value="${k}">${v.l}</label>`).join("");
+function setAlerts(list){fAlerts.querySelectorAll("input").forEach(c=>c.checked=list.includes(c.value));limitAlerts()}
+function getAlerts(){return[...fAlerts.querySelectorAll("input:checked")].map(c=>c.value)}
+function limitAlerts(){const n=getAlerts().length;fAlerts.querySelectorAll("input").forEach(c=>c.disabled=!c.checked&&n>=MAX_ALERTS)}
+fAlerts.addEventListener("change",limitAlerts);
+function syncTypeUI(){const a=fType.value==="appt";
+  document.querySelectorAll(".apptOnly").forEach(el=>el.hidden=!a);document.querySelectorAll(".notAppt").forEach(el=>el.hidden=a);
+  fNameLabel.textContent=a?"Compromisso":"O que vence?";fDateLabel.textContent=a?"Data":"Data de vencimento";
+  fName.placeholder=a?"Ex.: Dentista, salão, aula de inglês":"Ex.: Netflix, passaporte, garantia da TV"}
+fType.addEventListener("change",syncTypeUI);
+function openForm(it,preset){editing=it||null;formTitle.textContent=it?(isAppt(it)?"Editar compromisso":"Editar lembrete"):(preset?"Novo compromisso":"Novo lembrete");
+  fName.value=it?.name||preset||"";fType.value=it?.type||(preset?"appt":"sub");fDate.value=it?.date||plus(preset?1:30);fCost.value=it&&+it.cost?it.cost:"";
+  fTime.value=it?.time||"09:00";setAlerts(it?.alerts||["d1","d0"]);
+  fRepeat.value=it?.repeat||"none";fWarn.value=String(it?.warn??7);delBtn.hidden=!it;
+  formQuick.hidden=!!it;newPresetRow.hidden=true;voiceText.textContent=VOICE_HINT;
+  syncTypeUI();sheetBg.hidden=false;setTimeout(()=>(preset?fDate:fName).focus(),30)}
 const closeForm=()=>{sheetBg.hidden=true;editing=null};
 
 addBtn.onclick=()=>openForm();
@@ -261,17 +338,93 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!sheetBg.hidden)clo
 delBtn.onclick=()=>{items=items.filter(i=>i!==editing);save();closeForm();render()};
 form.addEventListener("submit",e=>{e.preventDefault();
   const data={name:fName.value.trim(),type:fType.value,date:fDate.value,cost:parseFloat(fCost.value)||0,repeat:fRepeat.value,warn:+fWarn.value};
+  if(data.type==="appt"){data.time=fTime.value||"09:00";data.alerts=getAlerts().slice(0,MAX_ALERTS);data.warn=apptWarnDays(data)}
+  else{delete data.time;data.alerts=undefined}
   if(!data.name||!data.date)return;
   const mine=items.filter(i=>!i.example).length;
   const growing=!editing||editing.example;
   if(!active&&growing&&mine>=FREE_LIMIT){closeForm();openPay("Você chegou ao limite de 3 lembretes da versão gratuita. Libere a versão completa para cadastrar quantos quiser.");return}
-  if(editing){Object.assign(editing,data,{example:false})}else items.push({...data,id:"i"+Date.now()});
+  if(editing){Object.assign(editing,data,{example:false});if(editing.type!=="appt"){delete editing.time;delete editing.alerts}}else items.push({...data,id:"i"+Date.now()});
   save();closeForm();render()});
 clearEx.onclick=()=>{items=items.filter(i=>!i.example);save();render()};
 document.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;
   if(b.dataset.f){filter=b.dataset.f;render()}
   if(b.dataset.edit)openForm(items.find(i=>i.id===b.dataset.edit));
   if(b.dataset.renew){const it=items.find(i=>i.id===b.dataset.renew);renew(it);save();render()}});
+/* ---------- Botões de compromisso ---------- */
+function presetHTML(where){
+  return BASE_PRESETS.map(n=>`<button type="button" class="preset" data-preset="${esc(n)}">${esc(n)}</button>`).join("")
+   +customPresets.map((n,i)=>`<span class="preset"><button type="button" class="preset" style="border:0;padding:0;background:none" data-preset="${esc(n)}">${esc(n)}</button><button type="button" class="x" style="border:0;background:none;cursor:pointer" data-delpreset="${i}" aria-label="Apagar botão ${esc(n)}">✕</button></span>`).join("")
+   +`<button type="button" class="preset add" data-newpreset="${where}">+ Criar botão</button>`}
+function renderPresets(){mainPresets.innerHTML=presetHTML("main");formPresets.innerHTML=presetHTML("form")}
+function addPreset(){const n=newPresetName.value.trim();if(!n)return;
+  if(![...BASE_PRESETS,...customPresets].some(x=>x.toLowerCase()===n.toLowerCase())){customPresets.push(n);savePresets()}
+  newPresetName.value="";newPresetRow.hidden=true;renderPresets();fName.value=n;fType.value="appt";syncTypeUI()}
+newPresetSave.onclick=addPreset;
+newPresetName.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();addPreset()}});
+document.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;
+  if(b.dataset.preset){if(sheetBg.hidden)openForm(null,b.dataset.preset);else{fName.value=b.dataset.preset;fType.value="appt";syncTypeUI();fDate.focus()}}
+  if(b.dataset.delpreset!==undefined){customPresets.splice(+b.dataset.delpreset,1);savePresets();renderPresets()}
+  if(b.dataset.newpreset){if(sheetBg.hidden)openForm(null,"");newPresetRow.hidden=false;formQuick.hidden=false;setTimeout(()=>newPresetName.focus(),40)}});
+renderPresets();
+
+/* ---------- Comando de voz ---------- */
+const VOICE_HINT="Diga, por exemplo: “dentista sexta às 15 horas”.";
+const NUMS={um:1,uma:1,dois:2,duas:2,"três":3,tres:3,quatro:4,cinco:5,seis:6,sete:7,oito:8,nove:9,dez:10,onze:11,doze:12,treze:13,catorze:14,quatorze:14,quinze:15,dezesseis:16,dezessete:17,dezoito:18,dezenove:19,vinte:20,trinta:30};
+const MONTHS=["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
+const WEEK=["domingo","segunda","terça","quarta","quinta","sexta","sábado"];
+function parseVoice(raw){
+  // Limites de palavra que entendem acentos (\b do JavaScript não reconhece "ã", "à" etc.)
+  const R=(src,f="")=>new RegExp(src.replace(/<</g,"(?<![\\p{L}\\d])").replace(/>>/g,"(?![\\p{L}\\d])"),"u"+f);
+  let t=" "+raw.toLowerCase().replace(/[.,!?]/g," ").replace(/\s+/g," ")+" ";
+  const NUMW="um|uma|dois|duas|três|tres|quatro|cinco|seis|sete|oito|nove|dez|onze|doze|treze|catorze|quatorze|quinze|dezesseis|dezessete|dezoito|dezenove|vinte|trinta|quarenta|cinquenta";
+  const N2={...NUMS,quarenta:40,cinquenta:50};
+  t=t.replace(R("<<(vinte|trinta|quarenta|cinquenta) e (um|uma|dois|duas|três|tres|quatro|cinco|seis|sete|oito|nove)>>","g"),(m,a,b)=>N2[a]+N2[b]);
+  t=t.replace(R("<<("+NUMW+")>>","g"),m=>N2[m]);
+  t=t.replace(R("<<meio[- ]dia>>","g"),"12 horas").replace(R("<<meia[- ]noite>>","g"),"0 horas");
+  t=t.replace(R("<<e meia>>","g"),"e 30");
+  const out={};let rest=t;const cut=x=>{rest=rest.replace(x," ")};
+  // horário: "15h", "15:30", "15 horas e 30", "às 3 da tarde", "às 10 e 30"
+  let m=t.match(R("<<(?:às |as |a )?(\\d{1,2})(?:h|:| ?horas?)(?: ?e)? ?(\\d{1,2})?(?: ?minutos?)?(?: (da manhã|da tarde|da noite))?>>"));
+  if(!m)m=t.match(R("<<(?:às|as) (\\d{1,2})(?: e (\\d{1,2}))?(?: (da manhã|da tarde|da noite))?>>"));
+  if(m){let h=+m[1],mi=+(m[2]||0);if(/tarde|noite/.test(m[3]||"")&&h<12)h+=12;
+    if(h<24&&mi<60){out.time=String(h).padStart(2,"0")+":"+String(mi).padStart(2,"0");cut(m[0])}}
+  // data
+  const base=today();let d=null,x;
+  if((x=t.match(R("<<depois de amanhã>>")))){d=new Date(base.getTime()+2*DAY);cut(x[0])}
+  else if((x=t.match(R("<<amanhã>>")))){d=new Date(base.getTime()+DAY);cut(x[0])}
+  else if((x=t.match(R("<<hoje>>")))){d=base;cut(x[0])}
+  if(!d&&(x=t.match(R("<<(?:na |no |nesta |neste |próxima |próximo )?(domingo|segunda|terça|quarta|quinta|sexta|sábado)(?:-feira| feira)?>>")))){
+    const target=WEEK.indexOf(x[1]);const add=(target-base.getDay()+7)%7||7;d=new Date(base.getTime()+add*DAY);cut(x[0])}
+  if(!d&&(x=t.match(R("<<(?:dia )?(\\d{1,2})(?: de |\\/)(janeiro|fevereiro|março|abril|maio|junho|julho|agosto|setembro|outubro|novembro|dezembro|\\d{1,2})>>")))){
+    const mon=isNaN(x[2])?MONTHS.indexOf(x[2]):+x[2]-1;d=new Date(base.getFullYear(),mon,+x[1]);if(d<base)d.setFullYear(d.getFullYear()+1);cut(x[0])}
+  if(!d&&(x=t.match(R("<<dia (\\d{1,2})>>")))){d=new Date(base.getFullYear(),base.getMonth(),+x[1]);if(d<base)d.setMonth(d.getMonth()+1);cut(x[0])}
+  if(d)out.date=iso(d);
+  // nome: um botão conhecido, um sinônimo, ou o que sobrou da frase
+  const all=[...customPresets,...BASE_PRESETS];
+  const syn={"veterinário":"Veterinário","veterinária":"Veterinário","veterinario":"Veterinário","vet":"Veterinário","tosa":"Tosa do pet","tosar":"Tosa do pet","banho":"Banho do pet","pet shop":"Banho do pet","petshop":"Banho do pet","médico":"Consulta médica","medico":"Consulta médica","médica":"Consulta médica","consulta":"Consulta médica","cabeleireiro":"Salão de beleza","cabeleireira":"Salão de beleza","cabelo":"Salão de beleza","salão":"Salão de beleza","unha":"Manicure","unhas":"Manicure","barbeiro":"Barbearia","dentista":"Dentista","aula":"Curso"};
+  let name=all.find(n=>t.includes(n.toLowerCase()));
+  if(!name){const k=Object.keys(syn).find(k=>R("<<"+k+">>").test(t));if(k)name=syn[k]}
+  if(!name){name=rest.replace(R("<<(marcar|agendar|anotar|lembrar|lembra|me|de|do|da|o|a|na|no|para|pra|um|uma|às|as|horas?|feira|compromisso|e)>>","g")," ").replace(/\s+/g," ").trim();
+    name=name?name[0].toUpperCase()+name.slice(1):""}
+  if(name)out.name=name;
+  return out}
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;let rec=null;
+if(!SR){micBtn.hidden=true;voiceText.textContent="Para falar, toque no microfone do teclado do celular e dite no campo abaixo.";}
+micBtn.onclick=()=>{
+  if(rec){rec.stop();return}
+  rec=new SR();rec.lang="pt-BR";rec.interimResults=true;rec.maxAlternatives=1;
+  micBtn.setAttribute("aria-pressed","true");micBtn.textContent="■ Parar";voiceText.textContent="Ouvindo…";
+  let final="";
+  rec.onresult=e=>{let txt="";for(const r of e.results)txt+=r[0].transcript;voiceText.textContent="“"+txt+"”";if(e.results[e.results.length-1].isFinal)final=txt};
+  rec.onerror=e=>{voiceText.textContent=e.error==="not-allowed"?"O microfone foi bloqueado. Libere nas configurações do navegador.":"Não entendi. Toque em Falar e tente de novo."};
+  rec.onend=()=>{micBtn.setAttribute("aria-pressed","false");micBtn.textContent="🎤 Falar";rec=null;
+    if(!final)return;const r=parseVoice(final);
+    fType.value="appt";syncTypeUI();if(r.name)fName.value=r.name;if(r.date)fDate.value=r.date;if(r.time)fTime.value=r.time;
+    voiceText.textContent="“"+final+"”. Confira os campos e toque em Salvar."};
+  try{rec.start()}catch(e){voiceText.textContent="Não foi possível usar o microfone aqui.";micBtn.setAttribute("aria-pressed","false");micBtn.textContent="🎤 Falar";rec=null}
+};
+
 render();save();
 updatePlan();
 const _render=render;render=function(){_render();updatePlan()};
@@ -319,8 +472,17 @@ refreshAlertUI();startSW();
 function icsEscape(s){return String(s).replace(/[\\;,]/g,m=>"\\"+m).replace(/\n/g,"\\n")}
 function buildICS(list){
   const stamp=new Date().toISOString().replace(/[-:]/g,"").slice(0,15)+"Z";
-  const ev=list.map(it=>{const d=it.date.replace(/-/g,"");const end=iso(new Date(new Date(it.date+"T00:00:00").getTime()+DAY)).replace(/-/g,"");
-    const rr=it.repeat==="month"?"RRULE:FREQ=MONTHLY\r\n":it.repeat==="year"?"RRULE:FREQ=YEARLY\r\n":"";
+  const ev=list.map(it=>{
+    if(isAppt(it)){const t=(it.time||"09:00").replace(":","")+"00";const st=it.date.replace(/-/g,"")+"T"+t;
+      const endD=new Date(new Date(it.date+"T"+(it.time||"09:00")+":00").getTime()+3600000);
+      const en=iso(endD).replace(/-/g,"")+"T"+String(endD.getHours()).padStart(2,"0")+String(endD.getMinutes()).padStart(2,"0")+"00";
+      const rr=it.repeat==="week"?"RRULE:FREQ=WEEKLY\r\n":it.repeat==="month"?"RRULE:FREQ=MONTHLY\r\n":it.repeat==="year"?"RRULE:FREQ=YEARLY\r\n":"";
+      const start=new Date(it.date+"T"+(it.time||"09:00")+":00");
+      const al=alertTimes(it).map(a=>{const mins=Math.max(0,Math.round((start-a.at)/60000));
+        return`BEGIN:VALARM\r\nACTION:DISPLAY\r\nDESCRIPTION:${icsEscape(it.name+" – "+ALERTS[a.k].l)}\r\nTRIGGER:-PT${mins}M\r\nEND:VALARM\r\n`}).join("");
+      return`BEGIN:VEVENT\r\nUID:${it.id}@lembratudo\r\nDTSTAMP:${stamp}\r\nDTSTART:${st}\r\nDTEND:${en}\r\n${rr}SUMMARY:${icsEscape(it.name)}\r\nDESCRIPTION:${icsEscape("Compromisso · Lembra Tudo")}\r\n${al}END:VEVENT\r\n`}
+    const d=it.date.replace(/-/g,"");const end=iso(new Date(new Date(it.date+"T00:00:00").getTime()+DAY)).replace(/-/g,"");
+    const rr=it.repeat==="week"?"RRULE:FREQ=WEEKLY\r\n":it.repeat==="month"?"RRULE:FREQ=MONTHLY\r\n":it.repeat==="year"?"RRULE:FREQ=YEARLY\r\n":"";
     const T=(TYPES[it.type]||TYPES.other).l;const cost=+it.cost?` (${fmtMoney(+it.cost)})`:"";
     return`BEGIN:VEVENT\r\nUID:${it.id}@lembratudo\r\nDTSTAMP:${stamp}\r\nDTSTART;VALUE=DATE:${d}\r\nDTEND;VALUE=DATE:${end}\r\n${rr}SUMMARY:${icsEscape("Vence: "+it.name+cost)}\r\nDESCRIPTION:${icsEscape(T+" · lembrete do Lembra Tudo")}\r\n`+
       `BEGIN:VALARM\r\nACTION:DISPLAY\r\nDESCRIPTION:${icsEscape(it.name+" vence em "+it.warn+" dias")}\r\nTRIGGER:-P${Math.max(it.warn-1,0)}DT15H\r\nEND:VALARM\r\n`+

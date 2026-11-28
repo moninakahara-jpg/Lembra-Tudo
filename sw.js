@@ -1,5 +1,5 @@
 // Lembra Tudo service worker: offline cache + background checks for due items.
-const CACHE = "lembra-tudo-v5";
+const CACHE = "lembra-tudo-v6";
 const ASSETS = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png"];
 const DAY = 86400000;
 

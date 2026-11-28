@@ -8,6 +8,7 @@
 <meta name="description" content="Avisa antes de vencerem assinaturas, documentos, garantias e contas. US$ 5, pagamento único. Sem cadastro, sem mensalidade, funciona offline.">
 <meta property="og:title" content="Lembra Tudo: nunca mais pague por uma assinatura esquecida">
 <meta property="og:description" content="Avisa antes de vencer assinaturas, RG, CNH, passaporte, garantias e contas. US$ 5 uma vez só.">
+<meta name="color-scheme" content="light only">
 <meta name="theme-color" content="#F7F6FB">
 <link rel="icon" href="../icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,6 +16,7 @@
 <style>
 /* Layout: navy hero with a phone "vencimentos" card, then one calm column of sections; lavender is reserved for the buy buttons and the warning dots */
 :root{
+  color-scheme:light;
   --bg:#F7F6FB; --surface:#FFFFFF; --ink:#34374A; --muted:#767B90; --line:#E9E6F2;
   --navy:#EEE8FB; --navy-2:#E4F3EC; --on-navy:#34374A; --on-navy-muted:#6C7186;
   --accent:#CDBDF4; --accent-ink:#2F2652; --accent-strong:#7A5CC9;
@@ -24,18 +26,6 @@
   --body:"Figtree","Segoe UI",system-ui,sans-serif;
   color-scheme:light;
 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#1B1A22; --surface:#25242E; --ink:#EEEDF5; --muted:#A6A4B8; --line:#35333F;
-  --navy:#26222F; --navy-2:#22292A; --on-navy:#EEEDF5; --on-navy-muted:#A6A4B8;
-  --accent:#BBA7F0; --accent-ink:#241C40; --accent-strong:#C9B8F7;
-  --late:#F0A0B2; --soon:#E9C77A; --ok:#8FD4B5;
-  --late-bg:#3A2830; --soon-bg:#352F1E; --ok-bg:#203029; color-scheme:dark}}
-:root[data-theme="dark"]{
-  --bg:#1B1A22; --surface:#25242E; --ink:#EEEDF5; --muted:#A6A4B8; --line:#35333F;
-  --navy:#26222F; --navy-2:#22292A; --on-navy:#EEEDF5; --on-navy-muted:#A6A4B8;
-  --accent:#BBA7F0; --accent-ink:#241C40; --accent-strong:#C9B8F7;
-  --late:#F0A0B2; --soon:#E9C77A; --ok:#8FD4B5;
-  --late-bg:#3A2830; --soon-bg:#352F1E; --ok-bg:#203029; color-scheme:dark}
 *{box-sizing:border-box}
 :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 html{scroll-behavior:smooth}

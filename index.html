@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light only">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
 <title>Lembra Tudo</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -16,6 +17,7 @@
 <style>
 /* Layout: one column phone-first, sticky summary on top, list grouped by urgency, add form as a bottom sheet */
 :root{
+  color-scheme:light;
   --bg:#F7F6FB; --surface:#FFFFFF; --ink:#34374A; --muted:#767B90; --line:#E9E6F2;
   --accent:#CDBDF4; --accent-ink:#2F2652; --accent-strong:#7A5CC9;
   --late:#B4506A; --soon:#946A17; --ok:#3B8466;
@@ -23,16 +25,6 @@
   --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
   --body:"Figtree", "Segoe UI", system-ui, sans-serif;
 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#1B1A22; --surface:#25242E; --ink:#EEEDF5; --muted:#A6A4B8; --line:#35333F;
-  --accent:#BBA7F0; --accent-ink:#241C40; --accent-strong:#C9B8F7;
-  --late:#F0A0B2; --soon:#E9C77A; --ok:#8FD4B5;
-  --late-bg:#3A2830; --soon-bg:#352F1E; --ok-bg:#203029; color-scheme:dark}}
-:root[data-theme="dark"]{
-  --bg:#1B1A22; --surface:#25242E; --ink:#EEEDF5; --muted:#A6A4B8; --line:#35333F;
-  --accent:#BBA7F0; --accent-ink:#241C40; --accent-strong:#C9B8F7;
-  --late:#F0A0B2; --soon:#E9C77A; --ok:#8FD4B5;
-  --late-bg:#3A2830; --soon-bg:#352F1E; --ok-bg:#203029; color-scheme:dark}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5}
 .wrap{max-width:640px;margin:0 auto;padding-block:20px 120px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}

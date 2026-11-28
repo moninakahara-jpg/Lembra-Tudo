@@ -37,7 +37,7 @@ h1{font:700 26px/1 var(--display);margin:0;letter-spacing:-.01em}
 .badge{background:none;cursor:pointer;font-family:var(--body);font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:4px 10px}
 .summary{margin-top:18px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
 .stat{background:var(--surface);border:1px solid var(--line);box-shadow:0 1px 2px rgba(52,55,74,.04);border-radius:14px;padding:12px}
-.stat b{display:block;font:600 24px/1.1 var(--display);font-variant-numeric:tabular-nums}
+.stat{min-width:0}.stat b{display:block;font:600 clamp(17px,5.2vw,24px)/1.1 var(--display);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
 .stat span{font-size:12px;color:var(--muted)}
 .stat.late b{color:var(--late)} .stat.money b{color:var(--ink)}
 .hint{margin-top:12px;background:var(--surface);border:1px dashed var(--line);border-radius:12px;padding:10px 12px;font-size:13px;color:var(--muted);display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
@@ -98,7 +98,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 .alertpick label:has(input:checked){border-color:var(--accent);background:var(--accent);color:var(--accent-ink)}
 .alertpick label:has(input:disabled:not(:checked)){opacity:.45;cursor:not-allowed}
 .foot{margin-top:28px;font-size:12px;color:var(--muted);text-align:center}
-@media (max-width:420px){.grid{grid-template-columns:1fr}.stat b{font-size:20px}}
+@media (max-width:420px){.grid{grid-template-columns:1fr}}
 
 .presets>:nth-child(4n+1){background:var(--yellow);border-color:transparent}
 .presets>:nth-child(4n+2){background:var(--green);border-color:transparent}
@@ -109,6 +109,9 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 .stat:nth-child(3){background:var(--green);border-color:transparent}
 .chip[aria-pressed="true"]{background:var(--blue)!important;color:var(--ink)!important;border-color:var(--blue)!important}
 .ico{background:var(--blue)}
+.lang{font:600 12px var(--body);color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:4px 8px;background:var(--surface);width:auto;cursor:pointer}
+.tools{display:flex;gap:8px;align-items:center}
+:lang(zh) body,:lang(zh) h1{font-family:"Figtree","PingFang SC","Noto Sans SC","Microsoft YaHei",system-ui,sans-serif}
 </style>
 
 </head>
@@ -117,135 +120,296 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
   <header>
     <div class="brand">
       <div class="logo" aria-hidden="true">L</div>
-      <div><h1>Lembra Tudo</h1><p class="tag">Nada vence sem você saber.</p></div>
+      <div><h1>Lembra Tudo</h1><p class="tag" data-i18n="tag"></p></div>
     </div>
-    <button type="button" class="badge" id="planBadge">Versão gratuita</button>
+    <div class="tools">
+      <select class="lang" id="langSel" aria-label="Idioma / Language / 语言">
+        <option value="pt">PT · Português</option>
+        <option value="es">ES · Español</option>
+        <option value="en">EN · English</option>
+        <option value="zh">中文</option>
+      </select>
+      <button type="button" class="badge" id="planBadge"></button>
+    </div>
   </header>
 
-  <section class="summary" aria-label="Resumo">
-    <div class="stat late"><b id="sLate">0</b><span>vencidos</span></div>
-    <div class="stat"><b id="sSoon">0</b><span>nos próximos 30 dias</span></div>
-    <div class="stat money"><b id="sMoney">R$0</b><span>em assinaturas por mês</span></div>
+  <section class="summary" data-i18n-aria="summary">
+    <div class="stat late"><b id="sLate">0</b><span data-i18n="sumLate"></span></div>
+    <div class="stat"><b id="sSoon">0</b><span data-i18n="sumSoon"></span></div>
+    <div class="stat money"><b id="sMoney">0</b><span data-i18n="sumMoney"></span></div>
   </section>
 
   <div class="hint" id="hint" hidden>
-    <span>Estes itens são exemplos para você ver como funciona.</span>
-    <button id="clearEx" type="button">Apagar exemplos</button>
+    <span data-i18n="exHint"></span>
+    <button id="clearEx" type="button" data-i18n="exClear"></button>
   </div>
 
-  <section class="alerts" aria-label="Avisos">
-    <p id="alertText">Receba um aviso no celular quando algo estiver para vencer.</p>
+  <section class="alerts">
+    <p id="alertText"></p>
     <div class="btns">
-      <button type="button" class="btn primary" id="notifBtn">Ativar avisos no celular</button>
-      <button type="button" class="btn" id="icsBtn">Adicionar ao calendário</button>
+      <button type="button" class="btn primary" id="notifBtn" data-i18n="notifBtn"></button>
+      <button type="button" class="btn" id="icsBtn" data-i18n="icsBtn"></button>
     </div>
-    <p id="iosTip" hidden>No iPhone: toque em Compartilhar e depois em “Adicionar à Tela de Início”. Abra o Lembra Tudo pelo ícone e ative os avisos.</p>
+    <p id="iosTip" hidden data-i18n="iosTip"></p>
   </section>
 
-  <section class="quick" aria-label="Agendar compromisso">
-    <h3>Agendar compromisso</h3>
+  <section class="quick">
+    <h3 data-i18n="quickTitle"></h3>
     <div class="presets" id="mainPresets"></div>
   </section>
 
-  <nav class="filters" aria-label="Filtrar por tipo" id="filters"></nav>
+  <nav class="filters" id="filters"></nav>
   <main id="groups"></main>
 
-  <p class="foot">Seus dados ficam só neste aparelho. Sem cadastro, sem anúncios, sem assinatura.</p>
+  <p class="foot" data-i18n="foot"></p>
 </div>
 
-<button class="fab" id="addBtn" type="button">+ Adicionar</button>
+<button class="fab" id="addBtn" type="button" data-i18n="add"></button>
 
 <div class="sheet-bg" id="payBg" hidden>
   <form class="sheet" id="payForm" aria-labelledby="payTitle">
-    <h2 id="payTitle">Libere o Lembra Tudo completo</h2>
-    <p class="paytext" id="payText">A versão gratuita guarda até 3 lembretes. Com a versão completa você cadastra quantos quiser, para sempre, por um pagamento único de US$5.</p>
-    <a class="btn primary buy" id="buyLink" href="#" target="_blank" rel="noopener" hidden>Comprar por US$5</a>
-    <label>Já comprou? Digite o código que você recebeu<input id="payCode" autocomplete="off" autocapitalize="characters" placeholder="LT-XXXX-XXXX-XXXX"></label>
-    <p class="payerr" id="payErr" hidden>Código não reconhecido. Confira as letras e os traços.</p>
-    <div class="row"><button type="button" class="btn" id="payClose">Agora não</button><button type="submit" class="btn primary">Ativar</button></div>
+    <h2 id="payTitle" data-i18n="payTitle"></h2>
+    <p class="paytext" id="payText"></p>
+    <a class="btn primary buy" id="buyLink" href="#" target="_blank" rel="noopener" hidden data-i18n="buy"></a>
+    <label><span data-i18n="payLabel"></span><input id="payCode" autocomplete="off" autocapitalize="characters" placeholder="LT-XXXX-XXXX-XXXX"></label>
+    <p class="payerr" id="payErr" hidden data-i18n="payErr"></p>
+    <div class="row"><button type="button" class="btn" id="payClose" data-i18n="notNow"></button><button type="submit" class="btn primary" data-i18n="activate"></button></div>
   </form>
 </div>
 
 <div class="sheet-bg" id="sheetBg" hidden>
   <form class="sheet" id="form" aria-labelledby="formTitle">
-    <h2 id="formTitle">Novo lembrete</h2>
+    <h2 id="formTitle"></h2>
     <div class="voice" id="voiceRow">
-      <button type="button" class="mic" id="micBtn" aria-pressed="false">🎤 Falar</button>
-      <small id="voiceText">Diga, por exemplo: “dentista sexta às 15 horas”.</small>
+      <button type="button" class="mic" id="micBtn" aria-pressed="false"></button>
+      <small id="voiceText"></small>
     </div>
     <div class="fquick" id="formQuick">
-      <h3>Compromissos rápidos</h3>
+      <h3 data-i18n="quickForm"></h3>
       <div class="presets" id="formPresets"></div>
       <div class="newpreset" id="newPresetRow" hidden>
-        <input id="newPresetName" maxlength="30" placeholder="Nome do botão, ex.: Pilates">
-        <button type="button" class="btn" id="newPresetSave">Criar</button>
+        <input id="newPresetName" maxlength="30" data-i18n-ph="newPresetPh">
+        <button type="button" class="btn" id="newPresetSave" data-i18n="create"></button>
       </div>
     </div>
     <div class="grid">
-      <label class="full"><span id="fNameLabel">O que vence?</span><input id="fName" required placeholder="Ex.: Netflix, passaporte, garantia da TV"></label>
-      <label>Tipo<select id="fType"></select></label>
-      <label><span id="fDateLabel">Data de vencimento</span><input id="fDate" type="date" required></label>
-      <label class="apptOnly" hidden>Horário<input id="fTime" type="time" value="09:00"></label>
-      <label>Valor (opcional)<input id="fCost" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0,00"></label>
-      <label>Repete<select id="fRepeat">
-        <option value="none">Não repete</option>
-        <option value="week">Toda semana</option>
-        <option value="month">Todo mês</option>
-        <option value="year">Todo ano</option>
+      <label class="full"><span id="fNameLabel"></span><input id="fName" required></label>
+      <label><span data-i18n="lblType"></span><select id="fType"></select></label>
+      <label><span id="fDateLabel"></span><input id="fDate" type="date" required></label>
+      <label class="apptOnly" hidden><span data-i18n="lblTime"></span><input id="fTime" type="time" value="09:00"></label>
+      <label><span data-i18n="lblCost"></span><input id="fCost" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0"></label>
+      <label><span data-i18n="lblRepeat"></span><select id="fRepeat">
+        <option value="none" data-i18n="repNone"></option>
+        <option value="week" data-i18n="repWeek"></option>
+        <option value="month" data-i18n="repMonth"></option>
+        <option value="year" data-i18n="repYear"></option>
       </select></label>
       <div class="full apptOnly" hidden>
-        <label style="margin-bottom:6px">Alertas (até 3)</label>
+        <label style="margin-bottom:6px" data-i18n="lblAlerts"></label>
         <div class="alertpick" id="fAlerts"></div>
       </div>
-      <label class="full notAppt">Avisar com antecedência<select id="fWarn">
-        <option value="3">3 dias antes</option>
-        <option value="7" selected>7 dias antes</option>
-        <option value="30">30 dias antes</option>
-        <option value="90">90 dias antes</option>
+      <label class="full notAppt"><span data-i18n="lblWarn"></span><select id="fWarn">
+        <option value="3"></option><option value="7" selected></option><option value="30"></option><option value="90"></option>
       </select></label>
     </div>
     <div class="row">
-      <button type="button" class="btn danger" id="delBtn" hidden>Excluir</button>
+      <button type="button" class="btn danger" id="delBtn" hidden data-i18n="del"></button>
       <span style="flex:1"></span>
-      <button type="button" class="btn" id="cancelBtn">Cancelar</button>
-      <button type="submit" class="btn primary">Salvar</button>
+      <button type="button" class="btn" id="cancelBtn" data-i18n="cancel"></button>
+      <button type="submit" class="btn primary" data-i18n="save"></button>
     </div>
   </form>
 </div>
 
 <script>
-const TYPES={sub:{l:"Assinatura",i:"📺"},doc:{l:"Documento",i:"🪪"},war:{l:"Garantia",i:"🧾"},bill:{l:"Conta",i:"💡"},health:{l:"Saúde",i:"💊"},appt:{l:"Compromisso",i:"📅"},other:{l:"Outro",i:"📌"}};
-/* ---------- Compromissos ---------- */
-const ALERTS={h1:{l:"1 hora antes",min:60},d0:{l:"No dia, às 8h",min:null},d1:{l:"1 dia antes",min:1440},d2:{l:"2 dias antes",min:2880},d7:{l:"1 semana antes",min:10080}};
+/* ================= Idiomas ================= */
+const I18N={
+pt:{locale:"pt-BR",speech:"pt-BR",
+  tag:"Nada vence sem você saber.",summary:"Resumo",sumLate:"vencidos",sumSoon:"nos próximos 30 dias",sumMoney:"em assinaturas por mês",
+  exHint:"Estes itens são exemplos para você ver como funciona.",exClear:"Apagar exemplos",
+  alertIntro:"Receba um aviso no celular quando algo estiver para vencer.",notifBtn:"Ativar avisos no celular",icsBtn:"Adicionar ao calendário",
+  iosTip:"No iPhone: toque em Compartilhar e depois em “Adicionar à Tela de Início”. Abra o Lembra Tudo pelo ícone e ative os avisos.",
+  quickTitle:"Agendar compromisso",foot:"Seus dados ficam só neste aparelho. Sem cadastro, sem anúncios, sem assinatura.",add:"+ Adicionar",
+  payTitle:"Libere o Lembra Tudo completo",payText:"A versão gratuita guarda até 3 lembretes. Com a versão completa você cadastra quantos quiser, para sempre, por um pagamento único. Preço de lançamento: R$ 39,90 (de R$ 59,90).",
+  payLimit:"Você chegou ao limite de 3 lembretes da versão gratuita. Libere a versão completa para cadastrar quantos quiser.",payBadLink:"Esse link de ativação não funcionou. Digite o código abaixo.",
+  buy:"Comprar por R$ 39,90",buyHtml:"Comprar por R$ 39,90 <s style=\"opacity:.6;font-weight:500\">R$ 59,90</s>",payLabel:"Já comprou? Digite o código que você recebeu",payErr:"Código não reconhecido. Confira as letras e os traços.",notNow:"Agora não",activate:"Ativar",activated:"Versão completa ativada. Obrigado pela compra!",
+  planFull:"Versão completa",planFree:(u,l)=>`Grátis · ${u} de ${l}`,
+  formNew:"Novo lembrete",formNewAppt:"Novo compromisso",formEdit:"Editar lembrete",formEditAppt:"Editar compromisso",
+  mic:"🎤 Falar",micStop:"■ Parar",listening:"Ouvindo…",voiceHint:"Diga, por exemplo: “dentista sexta às 15 horas”.",
+  voiceNoSR:"Para falar, toque no microfone do teclado do celular e dite no campo abaixo.",voiceBlocked:"O microfone foi bloqueado. Libere nas configurações do navegador.",
+  voiceRetry:"Não entendi. Toque em Falar e tente de novo.",voiceDone:q=>`“${q}”. Confira os campos e toque em Salvar.`,voiceFail:"Não foi possível usar o microfone aqui.",
+  quickForm:"Compromissos rápidos",newPresetPh:"Nome do botão, ex.: Pilates",create:"Criar",createBtn:"+ Criar botão",delPreset:n=>`Apagar botão ${n}`,
+  lblWhat:"O que vence?",lblAppt:"Compromisso",phWhat:"Ex.: Netflix, passaporte, garantia da TV",phAppt:"Ex.: Dentista, salão, aula de inglês",
+  lblType:"Tipo",lblDue:"Data de vencimento",lblDate:"Data",lblTime:"Horário",lblCost:"Valor (opcional)",lblRepeat:"Repete",
+  repNone:"Não repete",repWeek:"Toda semana",repMonth:"Todo mês",repYear:"Todo ano",lblAlerts:"Alertas (até 3)",lblWarn:"Avisar com antecedência",warnN:n=>`${n} dias antes`,
+  del:"Excluir",cancel:"Cancelar",save:"Salvar",
+  types:{sub:"Assinatura",doc:"Documento",war:"Garantia",bill:"Conta",health:"Saúde",appt:"Compromisso",other:"Outro"},
+  alerts:{h1:"1 hora antes",d0:"No dia, às 8h",d1:"1 dia antes",d2:"2 dias antes",d7:"1 semana antes"},
+  all:"Todos",emptyTitle:"Nada por aqui ainda.",emptyText:"Toque em “+ Adicionar” e cadastre sua primeira assinatura, documento ou garantia.",
+  secLate:"Vencidos ou já passaram",secSoon:"Atenção agora",secOk:"Tudo em dia",
+  repShort:{week:"semanal",month:"mensal",year:"anual"},nAlerts:n=>`${n} alerta${n>1?"s":""}`,example:"exemplo",renew:"Renovei",next:"Próximo",edit:"Editar",
+  dueAgo:n=>`venceu há ${n} dia${n>1?"s":""}`,dueToday:"vence hoje",tomorrow:"amanhã",inDays:n=>`em ${n} dias`,inMonths:n=>`em ~${n} meses`,
+  apptWasToday:t=>`foi hoje às ${t}`,apptAgo:n=>`foi há ${n} dia${n>1?"s":""}`,apptToday:t=>`hoje às ${t}`,apptTomorrow:t=>`amanhã às ${t}`,apptWd:(w,t)=>`${w} às ${t}`,
+  installFirst:"Para receber avisos, instale o app primeiro.",noNotif:"Este navegador não mostra avisos. Use “Adicionar ao calendário” para ser lembrado mesmo assim.",
+  notifOn:'<span class="on">Avisos ativados.</span> Para garantir o aviso mesmo com o app fechado, adicione também ao calendário.',
+  notifBlocked:"Os avisos estão bloqueados nas configurações do navegador. Use “Adicionar ao calendário”.",notifFail:"Não foi possível ativar os avisos aqui. Use “Adicionar ao calendário”.",
+  icsNone:"Cadastre seus próprios itens primeiro. Os exemplos não vão para o calendário.",icsDone:"Abra o arquivo baixado e confirme “Adicionar” para os lembretes irem para o calendário do celular.",
+  icsDue:n=>`Vence: ${n}`,icsDueIn:(n,d)=>`${n} vence em ${d} dias`,icsDueToday:n=>`${n} vence hoje`,icsAppt:"Compromisso · Lembra Tudo",icsDesc:t=>`${t} · lembrete do Lembra Tudo`,
+  presets:{consult:"Consulta médica",dentist:"Dentista",salon:"Salão de beleza",barber:"Barbearia",nails:"Manicure",exam:"Exame",course:"Curso",gym:"Academia",petbath:"Banho do pet",petgroom:"Tosa do pet",vet:"Veterinário"},
+  samples:["Streaming de vídeo","App de música","Armazenamento na nuvem","CNH","Passaporte","Garantia da geladeira","IPVA","Vacina da gripe","Dentista","Barbearia"],
+  notif:{h1:"em 1 hora",d0:"hoje",d1:"amanhã",d2:"em 2 dias",d7:"em 1 semana",at:"às",dueAgo:n=>`venceu há ${n} dia${n>1?"s":""}`,dueToday:"vence hoje",dueTomorrow:"vence amanhã",dueIn:n=>`vence em ${n} dias`,tap:"Toque para abrir o Lembra Tudo."}},
+
+es:{locale:"es",speech:"es-ES",
+  tag:"Nada vence sin que lo sepas.",summary:"Resumen",sumLate:"vencidos",sumSoon:"en los próximos 30 días",sumMoney:"en suscripciones al mes",
+  exHint:"Estos elementos son ejemplos para que veas cómo funciona.",exClear:"Borrar ejemplos",
+  alertIntro:"Recibe un aviso en el celular cuando algo esté por vencer.",notifBtn:"Activar avisos en el celular",icsBtn:"Agregar al calendario",
+  iosTip:"En iPhone: toca Compartir y luego “Agregar a inicio”. Abre Lembra Tudo desde el ícono y activa los avisos.",
+  quickTitle:"Agendar cita",foot:"Tus datos quedan solo en este dispositivo. Sin registro, sin anuncios, sin suscripción.",add:"+ Agregar",
+  payTitle:"Desbloquea Lembra Tudo completo",payText:"La versión gratuita guarda hasta 3 recordatorios. Con la versión completa registras todos los que quieras, para siempre, con un único pago de US$5.",
+  payLimit:"Llegaste al límite de 3 recordatorios de la versión gratuita. Desbloquea la versión completa para registrar todos los que quieras.",payBadLink:"Ese enlace de activación no funcionó. Escribe el código abajo.",
+  buy:"Comprar por US$5",payLabel:"¿Ya compraste? Escribe el código que recibiste",payErr:"Código no reconocido. Revisa las letras y los guiones.",notNow:"Ahora no",activate:"Activar",activated:"Versión completa activada. ¡Gracias por tu compra!",
+  planFull:"Versión completa",planFree:(u,l)=>`Gratis · ${u} de ${l}`,
+  formNew:"Nuevo recordatorio",formNewAppt:"Nueva cita",formEdit:"Editar recordatorio",formEditAppt:"Editar cita",
+  mic:"🎤 Hablar",micStop:"■ Parar",listening:"Escuchando…",voiceHint:"Di, por ejemplo: “dentista el viernes a las 3 de la tarde”.",
+  voiceNoSR:"Para hablar, toca el micrófono del teclado y dicta en el campo de abajo.",voiceBlocked:"El micrófono está bloqueado. Habilítalo en la configuración del navegador.",
+  voiceRetry:"No entendí. Toca Hablar e inténtalo de nuevo.",voiceDone:q=>`“${q}”. Revisa los campos y toca Guardar.`,voiceFail:"No se pudo usar el micrófono aquí.",
+  quickForm:"Citas rápidas",newPresetPh:"Nombre del botón, ej.: Pilates",create:"Crear",createBtn:"+ Crear botón",delPreset:n=>`Borrar botón ${n}`,
+  lblWhat:"¿Qué vence?",lblAppt:"Cita",phWhat:"Ej.: Netflix, pasaporte, garantía de la TV",phAppt:"Ej.: Dentista, peluquería, clase de inglés",
+  lblType:"Tipo",lblDue:"Fecha de vencimiento",lblDate:"Fecha",lblTime:"Hora",lblCost:"Valor (opcional)",lblRepeat:"Se repite",
+  repNone:"No se repite",repWeek:"Cada semana",repMonth:"Cada mes",repYear:"Cada año",lblAlerts:"Alertas (hasta 3)",lblWarn:"Avisar con anticipación",warnN:n=>`${n} días antes`,
+  del:"Eliminar",cancel:"Cancelar",save:"Guardar",
+  types:{sub:"Suscripción",doc:"Documento",war:"Garantía",bill:"Cuenta",health:"Salud",appt:"Cita",other:"Otro"},
+  alerts:{h1:"1 hora antes",d0:"El mismo día, 8 h",d1:"1 día antes",d2:"2 días antes",d7:"1 semana antes"},
+  all:"Todos",emptyTitle:"Aún no hay nada aquí.",emptyText:"Toca “+ Agregar” y registra tu primera suscripción, documento o garantía.",
+  secLate:"Vencidos o ya pasaron",secSoon:"Atención ahora",secOk:"Todo al día",
+  repShort:{week:"semanal",month:"mensual",year:"anual"},nAlerts:n=>`${n} alerta${n>1?"s":""}`,example:"ejemplo",renew:"Renové",next:"Siguiente",edit:"Editar",
+  dueAgo:n=>`venció hace ${n} día${n>1?"s":""}`,dueToday:"vence hoy",tomorrow:"mañana",inDays:n=>`en ${n} días`,inMonths:n=>`en ~${n} meses`,
+  apptWasToday:t=>`fue hoy a las ${t}`,apptAgo:n=>`fue hace ${n} día${n>1?"s":""}`,apptToday:t=>`hoy a las ${t}`,apptTomorrow:t=>`mañana a las ${t}`,apptWd:(w,t)=>`${w} a las ${t}`,
+  installFirst:"Para recibir avisos, instala la app primero.",noNotif:"Este navegador no muestra avisos. Usa “Agregar al calendario” para que te recuerde igual.",
+  notifOn:'<span class="on">Avisos activados.</span> Para asegurar el aviso con la app cerrada, agrégalo también al calendario.',
+  notifBlocked:"Los avisos están bloqueados en la configuración del navegador. Usa “Agregar al calendario”.",notifFail:"No se pudieron activar los avisos aquí. Usa “Agregar al calendario”.",
+  icsNone:"Primero registra tus propios elementos. Los ejemplos no van al calendario.",icsDone:"Abre el archivo descargado y confirma “Agregar” para enviar los recordatorios al calendario.",
+  icsDue:n=>`Vence: ${n}`,icsDueIn:(n,d)=>`${n} vence en ${d} días`,icsDueToday:n=>`${n} vence hoy`,icsAppt:"Cita · Lembra Tudo",icsDesc:t=>`${t} · recordatorio de Lembra Tudo`,
+  presets:{consult:"Consulta médica",dentist:"Dentista",salon:"Peluquería",barber:"Barbería",nails:"Manicura",exam:"Examen",course:"Curso",gym:"Gimnasio",petbath:"Baño de mascota",petgroom:"Corte de mascota",vet:"Veterinario"},
+  samples:["Streaming de video","App de música","Almacenamiento en la nube","Licencia de conducir","Pasaporte","Garantía del refrigerador","Impuesto del auto","Vacuna de la gripe","Dentista","Barbería"],
+  notif:{h1:"en 1 hora",d0:"hoy",d1:"mañana",d2:"en 2 días",d7:"en 1 semana",at:"a las",dueAgo:n=>`venció hace ${n} día${n>1?"s":""}`,dueToday:"vence hoy",dueTomorrow:"vence mañana",dueIn:n=>`vence en ${n} días`,tap:"Toca para abrir Lembra Tudo."}},
+
+en:{locale:"en-US",speech:"en-US",
+  tag:"Nothing expires without you knowing.",summary:"Summary",sumLate:"overdue",sumSoon:"in the next 30 days",sumMoney:"in subscriptions per month",
+  exHint:"These items are examples so you can see how it works.",exClear:"Delete examples",
+  alertIntro:"Get a phone alert when something is about to expire.",notifBtn:"Turn on phone alerts",icsBtn:"Add to calendar",
+  iosTip:"On iPhone: tap Share, then “Add to Home Screen”. Open Lembra Tudo from the icon and turn on alerts.",
+  quickTitle:"Book an appointment",foot:"Your data stays on this device only. No sign-up, no ads, no subscription.",add:"+ Add",
+  payTitle:"Unlock the full Lembra Tudo",payText:"The free version keeps up to 3 reminders. The full version lets you add as many as you want, forever, for a one-time payment of US$5.",
+  payLimit:"You've reached the 3-reminder limit of the free version. Unlock the full version to add as many as you want.",payBadLink:"That activation link didn't work. Type the code below.",
+  buy:"Buy for US$5",payLabel:"Already bought it? Enter the code you received",payErr:"Code not recognized. Check the letters and dashes.",notNow:"Not now",activate:"Activate",activated:"Full version activated. Thanks for your purchase!",
+  planFull:"Full version",planFree:(u,l)=>`Free · ${u} of ${l}`,
+  formNew:"New reminder",formNewAppt:"New appointment",formEdit:"Edit reminder",formEditAppt:"Edit appointment",
+  mic:"🎤 Speak",micStop:"■ Stop",listening:"Listening…",voiceHint:"Say, for example: “dentist Friday at 3 pm”.",
+  voiceNoSR:"To speak, tap the microphone on your keyboard and dictate in the field below.",voiceBlocked:"The microphone is blocked. Allow it in your browser settings.",
+  voiceRetry:"I didn't catch that. Tap Speak and try again.",voiceDone:q=>`“${q}”. Check the fields and tap Save.`,voiceFail:"The microphone can't be used here.",
+  quickForm:"Quick appointments",newPresetPh:"Button name, e.g. Pilates",create:"Create",createBtn:"+ New button",delPreset:n=>`Delete button ${n}`,
+  lblWhat:"What expires?",lblAppt:"Appointment",phWhat:"E.g. Netflix, passport, TV warranty",phAppt:"E.g. Dentist, hair salon, English class",
+  lblType:"Type",lblDue:"Due date",lblDate:"Date",lblTime:"Time",lblCost:"Amount (optional)",lblRepeat:"Repeats",
+  repNone:"Doesn't repeat",repWeek:"Every week",repMonth:"Every month",repYear:"Every year",lblAlerts:"Alerts (up to 3)",lblWarn:"Remind me ahead",warnN:n=>`${n} days before`,
+  del:"Delete",cancel:"Cancel",save:"Save",
+  types:{sub:"Subscription",doc:"Document",war:"Warranty",bill:"Bill",health:"Health",appt:"Appointment",other:"Other"},
+  alerts:{h1:"1 hour before",d0:"Same day, 8 am",d1:"1 day before",d2:"2 days before",d7:"1 week before"},
+  all:"All",emptyTitle:"Nothing here yet.",emptyText:"Tap “+ Add” and enter your first subscription, document or warranty.",
+  secLate:"Overdue or past",secSoon:"Needs attention",secOk:"All good",
+  repShort:{week:"weekly",month:"monthly",year:"yearly"},nAlerts:n=>`${n} alert${n>1?"s":""}`,example:"example",renew:"Renewed",next:"Next",edit:"Edit",
+  dueAgo:n=>`expired ${n} day${n>1?"s":""} ago`,dueToday:"due today",tomorrow:"tomorrow",inDays:n=>`in ${n} days`,inMonths:n=>`in ~${n} months`,
+  apptWasToday:t=>`was today at ${t}`,apptAgo:n=>`${n} day${n>1?"s":""} ago`,apptToday:t=>`today at ${t}`,apptTomorrow:t=>`tomorrow at ${t}`,apptWd:(w,t)=>`${w} at ${t}`,
+  installFirst:"To get alerts, install the app first.",noNotif:"This browser doesn't show alerts. Use “Add to calendar” to be reminded anyway.",
+  notifOn:'<span class="on">Alerts on.</span> To be sure you get them with the app closed, also add them to your calendar.',
+  notifBlocked:"Alerts are blocked in your browser settings. Use “Add to calendar”.",notifFail:"Alerts couldn't be turned on here. Use “Add to calendar”.",
+  icsNone:"Add your own items first. Examples don't go to the calendar.",icsDone:"Open the downloaded file and confirm “Add” to send the reminders to your calendar.",
+  icsDue:n=>`Due: ${n}`,icsDueIn:(n,d)=>`${n} is due in ${d} days`,icsDueToday:n=>`${n} is due today`,icsAppt:"Appointment · Lembra Tudo",icsDesc:t=>`${t} · Lembra Tudo reminder`,
+  presets:{consult:"Doctor",dentist:"Dentist",salon:"Hair salon",barber:"Barber",nails:"Nails",exam:"Medical test",course:"Class",gym:"Gym",petbath:"Pet bath",petgroom:"Pet grooming",vet:"Vet"},
+  samples:["Video streaming","Music app","Cloud storage","Driver's license","Passport","Fridge warranty","Car tax","Flu shot","Dentist","Barber"],
+  notif:{h1:"in 1 hour",d0:"today",d1:"tomorrow",d2:"in 2 days",d7:"in 1 week",at:"at",dueAgo:n=>`expired ${n} day${n>1?"s":""} ago`,dueToday:"is due today",dueTomorrow:"is due tomorrow",dueIn:n=>`is due in ${n} days`,tap:"Tap to open Lembra Tudo."}},
+
+zh:{locale:"zh-CN",speech:"zh-CN",
+  tag:"到期的事，一件都不会忘。",summary:"概览",sumLate:"已过期",sumSoon:"未来30天内",sumMoney:"每月订阅费用",
+  exHint:"这些是示例，帮助你了解使用方法。",exClear:"删除示例",
+  alertIntro:"快到期时，在手机上收到提醒。",notifBtn:"开启手机提醒",icsBtn:"添加到日历",
+  iosTip:"iPhone：点击“分享”，再点“添加到主屏幕”。从图标打开 Lembra Tudo 并开启提醒。",
+  quickTitle:"预约安排",foot:"数据只保存在这台设备上。无需注册，没有广告，没有订阅。",add:"+ 添加",
+  payTitle:"解锁完整版 Lembra Tudo",payText:"免费版最多保存3条提醒。完整版可无限添加，永久使用，一次性付款 US$5。",
+  payLimit:"你已达到免费版3条提醒的上限。解锁完整版即可无限添加。",payBadLink:"该激活链接无效。请在下方输入激活码。",
+  buy:"US$5 购买",payLabel:"已购买？请输入收到的激活码",payErr:"激活码无法识别。请检查字母和连字符。",notNow:"以后再说",activate:"激活",activated:"完整版已激活，感谢购买！",
+  planFull:"完整版",planFree:(u,l)=>`免费 · ${u}/${l}`,
+  formNew:"新提醒",formNewAppt:"新预约",formEdit:"编辑提醒",formEditAppt:"编辑预约",
+  mic:"🎤 语音输入",micStop:"■ 停止",listening:"正在听…",voiceHint:"例如说：“周五下午3点看牙医”。",
+  voiceNoSR:"要用语音，请点键盘上的麦克风，在下方输入框中听写。",voiceBlocked:"麦克风已被阻止。请在浏览器设置中允许。",
+  voiceRetry:"没听清楚。请点“语音输入”再试一次。",voiceDone:q=>`“${q}”。请检查内容后点“保存”。`,voiceFail:"此处无法使用麦克风。",
+  quickForm:"快捷预约",newPresetPh:"按钮名称，例如：普拉提",create:"创建",createBtn:"+ 新建按钮",delPreset:n=>`删除按钮 ${n}`,
+  lblWhat:"什么要到期？",lblAppt:"预约",phWhat:"例如：Netflix、护照、电视保修",phAppt:"例如：牙医、美发、英语课",
+  lblType:"类型",lblDue:"到期日",lblDate:"日期",lblTime:"时间",lblCost:"金额（可选）",lblRepeat:"重复",
+  repNone:"不重复",repWeek:"每周",repMonth:"每月",repYear:"每年",lblAlerts:"提醒（最多3个）",lblWarn:"提前提醒",warnN:n=>`提前${n}天`,
+  del:"删除",cancel:"取消",save:"保存",
+  types:{sub:"订阅",doc:"证件",war:"保修",bill:"账单",health:"健康",appt:"预约",other:"其他"},
+  alerts:{h1:"提前1小时",d0:"当天早上8点",d1:"提前1天",d2:"提前2天",d7:"提前1周"},
+  all:"全部",emptyTitle:"这里还没有内容。",emptyText:"点击“+ 添加”，录入你的第一个订阅、证件或保修。",
+  secLate:"已过期或已过去",secSoon:"需要注意",secOk:"一切正常",
+  repShort:{week:"每周",month:"每月",year:"每年"},nAlerts:n=>`${n}个提醒`,example:"示例",renew:"已续费",next:"下一次",edit:"编辑",
+  dueAgo:n=>`已过期${n}天`,dueToday:"今天到期",tomorrow:"明天",inDays:n=>`${n}天后`,inMonths:n=>`约${n}个月后`,
+  apptWasToday:t=>`今天 ${t}（已过）`,apptAgo:n=>`${n}天前`,apptToday:t=>`今天 ${t}`,apptTomorrow:t=>`明天 ${t}`,apptWd:(w,t)=>`${w} ${t}`,
+  installFirst:"要接收提醒，请先安装应用。",noNotif:"此浏览器不支持提醒。请使用“添加到日历”。",
+  notifOn:'<span class="on">提醒已开启。</span>为确保应用关闭时也能收到，请同时添加到日历。',
+  notifBlocked:"提醒已在浏览器设置中被阻止。请使用“添加到日历”。",notifFail:"无法在此开启提醒。请使用“添加到日历”。",
+  icsNone:"请先添加你自己的项目。示例不会加入日历。",icsDone:"打开下载的文件并确认“添加”，提醒就会进入手机日历。",
+  icsDue:n=>`到期：${n}`,icsDueIn:(n,d)=>`${n} 还有${d}天到期`,icsDueToday:n=>`${n} 今天到期`,icsAppt:"预约 · Lembra Tudo",icsDesc:t=>`${t} · Lembra Tudo 提醒`,
+  presets:{consult:"看医生",dentist:"牙医",salon:"美发",barber:"理发",nails:"美甲",exam:"体检",course:"上课",gym:"健身",petbath:"宠物洗澡",petgroom:"宠物美容",vet:"宠物医院"},
+  samples:["视频会员","音乐会员","云存储","驾照","护照","冰箱保修","车船税","流感疫苗","牙医","理发"],
+  notif:{h1:"1小时后",d0:"今天",d1:"明天",d2:"2天后",d7:"1周后",at:"",dueAgo:n=>`已过期${n}天`,dueToday:"今天到期",dueTomorrow:"明天到期",dueIn:n=>`还有${n}天到期`,tap:"点按打开 Lembra Tudo。"}}
+};
+const LKEY="lembra-tudo-idioma";
+function detectLang(){let s=null;try{s=localStorage.getItem(LKEY)}catch(e){}
+  if(s&&I18N[s])return s;
+  for(const l of (navigator.languages||[navigator.language||"pt"])){const p=String(l).slice(0,2).toLowerCase();if(I18N[p])return p}
+  return"en"}
+let LANG=detectLang();let L=I18N[LANG];
+// Moeda pelo país do aparelho; se não der para saber, pela língua
+const CUR_BY_REGION={BR:"BRL",PT:"EUR",ES:"EUR",MX:"MXN",AR:"ARS",CO:"COP",CL:"CLP",PE:"PEN",UY:"UYU",US:"USD",GB:"GBP",CA:"CAD",AU:"AUD",CN:"CNY",TW:"TWD",HK:"HKD",SG:"SGD"};
+const CUR_BY_LANG={pt:"BRL",es:"USD",en:"USD",zh:"CNY"};
+function currency(){const tag=(navigator.languages||[navigator.language||""]).find(l=>String(l).slice(0,2).toLowerCase()===LANG)||"";
+  const reg=(tag.split("-")[1]||"").toUpperCase();return CUR_BY_REGION[reg]||CUR_BY_LANG[LANG]}
+let CUR=currency();
+const fmtMoney=v=>{try{return v.toLocaleString(L.locale,{style:"currency",currency:CUR})}catch(e){return v.toFixed(2)}};
+
+/* ================= Dados ================= */
+const ICONS={sub:"📺",doc:"🪪",war:"🧾",bill:"💡",health:"💊",appt:"📅",other:"📌"};
+const TYPE_KEYS=Object.keys(ICONS);
+const ALERT_MIN={h1:60,d0:null,d1:1440,d2:2880,d7:10080};
 const MAX_ALERTS=3;
-const BASE_PRESETS=["Consulta médica","Dentista","Salão de beleza","Barbearia","Manicure","Exame","Curso","Academia","Banho do pet","Tosa do pet","Veterinário"];
+const PRESET_KEYS=["consult","dentist","salon","barber","nails","exam","course","gym","petbath","petgroom","vet"];
+const basePresets=()=>PRESET_KEYS.map(k=>L.presets[k]);
 const PKEY="lembra-tudo-botoes";
 let customPresets=[];try{customPresets=JSON.parse(localStorage.getItem(PKEY))||[]}catch(e){}
 const savePresets=()=>{try{localStorage.setItem(PKEY,JSON.stringify(customPresets))}catch(e){}};
 const isAppt=it=>it.type==="appt";
-// Momento exato de cada alerta de um compromisso
 function alertTimes(it){const start=new Date(it.date+"T"+(it.time||"09:00")+":00");
   return (it.alerts||[]).map(k=>{if(k==="d0"){const t=new Date(start);t.setHours(8,0,0,0);return{k,at:t>start?start:t}}
-    return{k,at:new Date(start.getTime()-(ALERTS[k]?.min||0)*60000)}})}
-const apptWarnDays=it=>Math.max(0,...(it.alerts||[]).map(k=>k==="d0"||k==="h1"?0:Math.ceil(ALERTS[k].min/1440)));
+    return{k,at:new Date(start.getTime()-(ALERT_MIN[k]||0)*60000)}})}
+const apptWarnDays=it=>Math.max(0,...(it.alerts||[]).map(k=>k==="d0"||k==="h1"?0:Math.ceil(ALERT_MIN[k]/1440)));
 const KEY="lembra-tudo-v1";
 const DAY=86400000;
 const today=()=>{const d=new Date();d.setHours(0,0,0,0);return d};
 const iso=d=>new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10);
 const plus=n=>iso(new Date(today().getTime()+n*DAY));
-const fmtMoney=v=>v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
 
-function samples(){return[
-  {name:"Streaming de vídeo",type:"sub",date:plus(4),cost:55.9,repeat:"month",warn:7},
-  {name:"App de música",type:"sub",date:plus(12),cost:21.9,repeat:"month",warn:3},
-  {name:"Armazenamento na nuvem",type:"sub",date:plus(-2),cost:9.9,repeat:"month",warn:3},
-  {name:"CNH",type:"doc",date:plus(48),cost:0,repeat:"none",warn:90},
-  {name:"Passaporte",type:"doc",date:plus(210),cost:0,repeat:"none",warn:90},
-  {name:"Garantia da geladeira",type:"war",date:plus(25),cost:0,repeat:"none",warn:30},
-  {name:"IPVA",type:"bill",date:plus(70),cost:1240,repeat:"year",warn:30},
-  {name:"Vacina da gripe",type:"health",date:plus(140),cost:0,repeat:"year",warn:30},
-  {name:"Dentista",type:"appt",date:plus(2),time:"14:30",alerts:["d1","h1"],cost:0,repeat:"none",warn:1},
-  {name:"Barbearia",type:"appt",date:plus(9),time:"10:00",alerts:["d0"],cost:45,repeat:"none",warn:0}
+function samples(){const n=L.samples;return[
+  {name:n[0],type:"sub",date:plus(4),cost:55.9,repeat:"month",warn:7},
+  {name:n[1],type:"sub",date:plus(12),cost:21.9,repeat:"month",warn:3},
+  {name:n[2],type:"sub",date:plus(-2),cost:9.9,repeat:"month",warn:3},
+  {name:n[3],type:"doc",date:plus(48),cost:0,repeat:"none",warn:90},
+  {name:n[4],type:"doc",date:plus(210),cost:0,repeat:"none",warn:90},
+  {name:n[5],type:"war",date:plus(25),cost:0,repeat:"none",warn:30},
+  {name:n[6],type:"bill",date:plus(70),cost:1240,repeat:"year",warn:30},
+  {name:n[7],type:"health",date:plus(140),cost:0,repeat:"year",warn:30},
+  {name:n[8],type:"appt",date:plus(2),time:"14:30",alerts:["d1","h1"],cost:0,repeat:"none",warn:1},
+  {name:n[9],type:"appt",date:plus(9),time:"10:00",alerts:["d0"],cost:45,repeat:"none",warn:0}
 ].map((x,i)=>({...x,id:"ex"+i,example:true}))}
 
 let items=null,filter="all",editing=null;
@@ -258,10 +422,9 @@ async function codeOk(c){c=c.trim().toUpperCase().replace(/\s+/g,"");if(!c)retur
   try{const h=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(c));
     const hex=[...new Uint8Array(h)].map(b=>b.toString(16).padStart(2,"0")).join("");return CODE_HASHES.includes(hex)}catch(e){return false}}
 function activate(){active=true;try{localStorage.setItem("lembra-tudo-ativo","1")}catch(e){}updatePlan()}
-function updatePlan(){if(typeof planBadge==="undefined")return;
-  const used=(items||[]).filter(i=>!i.example).length;
-  planBadge.textContent=active?"Versão completa":`Grátis · ${Math.min(used,FREE_LIMIT)} de ${FREE_LIMIT}`}
-function openPay(msg){payText.textContent=msg||"A versão gratuita guarda até 3 lembretes. Com a versão completa você cadastra quantos quiser, para sempre, por um pagamento único de US$5.";
+function updatePlan(){const used=(items||[]).filter(i=>!i.example).length;
+  planBadge.textContent=active?L.planFull:L.planFree(Math.min(used,FREE_LIMIT),FREE_LIMIT)}
+function openPay(msg){payText.textContent=msg||L.payText;
   payErr.hidden=true;payCode.value="";buyLink.hidden=!BUY_URL;if(BUY_URL)buyLink.href=BUY_URL;payBg.hidden=false}
 try{items=JSON.parse(localStorage.getItem(KEY))}catch(e){}
 if(!Array.isArray(items))items=samples();
@@ -275,65 +438,60 @@ const daysLeft=it=>Math.round((new Date(it.date+"T00:00:00")-today())/DAY);
 function status(it){const d=daysLeft(it);
   if(isAppt(it)){const start=new Date(it.date+"T"+(it.time||"09:00")+":00");if(start<new Date())return"late";return d<=Math.max(apptWarnDays(it),1)?"soon":"ok"}
   if(d<0)return"late";if(d<=Math.max(it.warn,0))return"soon";return"ok"}
-function label(d){if(d<0)return `venceu há ${-d} dia${d===-1?"":"s"}`;if(d===0)return"vence hoje";if(d===1)return"amanhã";if(d<60)return`em ${d} dias`;const m=Math.round(d/30);return`em ~${m} meses`}
-const fmtDate=s=>new Date(s+"T00:00:00").toLocaleDateString("pt-BR",{day:"2-digit",month:"short",year:"numeric"});
-
-function apptLabel(it){const d=daysLeft(it),t=it.time||"09:00";
-  if(status(it)==="late")return d===0?`foi hoje às ${t}`:`foi há ${-d} dia${d===-1?"":"s"}`;
-  if(d===0)return`hoje às ${t}`;if(d===1)return`amanhã às ${t}`;
-  const wd=new Date(it.date+"T00:00:00").toLocaleDateString("pt-BR",{weekday:"short"}).replace(".","");
-  return d<7?`${wd} às ${t}`:`em ${d} dias`}
+function label(d){if(d<0)return L.dueAgo(-d);if(d===0)return L.dueToday;if(d===1)return L.tomorrow;if(d<60)return L.inDays(d);return L.inMonths(Math.round(d/30))}
+const fmtDate=s=>new Date(s+"T00:00:00").toLocaleDateString(L.locale,{day:"2-digit",month:"short",year:"numeric"});
+const fmtTime=t=>{const [h,m]=(t||"09:00").split(":").map(Number);const d=new Date();d.setHours(h,m,0,0);
+  return LANG==="en"?d.toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"}):(t||"09:00")};
+function apptLabel(it){const d=daysLeft(it),t=fmtTime(it.time);
+  if(status(it)==="late")return d===0?L.apptWasToday(t):L.apptAgo(-d);
+  if(d===0)return L.apptToday(t);if(d===1)return L.apptTomorrow(t);
+  const wd=new Date(it.date+"T00:00:00").toLocaleDateString(L.locale,{weekday:"short"}).replace(".","");
+  return d<7?L.apptWd(wd,t):L.inDays(d)}
 function renew(it){const d=new Date(it.date+"T00:00:00");if(it.repeat==="week")d.setDate(d.getDate()+7);else if(it.repeat==="month")d.setMonth(d.getMonth()+1);else if(it.repeat==="year")d.setFullYear(d.getFullYear()+1);it.date=iso(d)}
-
-function render(){
-  const late=items.filter(i=>daysLeft(i)<0).length;
-  const soon=items.filter(i=>{const d=daysLeft(i);return d>=0&&d<=30}).length;
-  const money=items.filter(i=>i.type==="sub"&&i.repeat==="month").reduce((s,i)=>s+(+i.cost||0),0)
-            +items.filter(i=>i.type==="sub"&&i.repeat==="year").reduce((s,i)=>s+(+i.cost||0)/12,0);
-  sLate.textContent=late;sSoon.textContent=soon;sMoney.textContent=fmtMoney(money).replace(/,00$/,"");
-  hint.hidden=!items.some(i=>i.example);
-
-  const counts={all:items.length};items.forEach(i=>counts[i.type]=(counts[i.type]||0)+1);
-  filters.innerHTML=[["all","Todos"],...Object.entries(TYPES).filter(([k])=>counts[k]).map(([k,v])=>[k,v.l])]
-    .map(([k,l])=>`<button class="chip" type="button" data-f="${k}" aria-pressed="${filter===k}">${l} · ${counts[k]||0}</button>`).join("");
-
-  const list=items.filter(i=>filter==="all"||i.type===filter).sort((a,b)=>daysLeft(a)-daysLeft(b));
-  if(!list.length){groups.innerHTML=`<div class="empty"><p><b>Nada por aqui ainda.</b></p><p>Toque em “+ Adicionar” e cadastre sua primeira assinatura, documento ou garantia.</p></div>`;return}
-  const sections=[["late","Vencidos ou já passaram"],["soon","Atenção agora"],["ok","Tudo em dia"]];
-  groups.innerHTML=sections.map(([s,t])=>{
-    const rows=list.filter(i=>status(i)===s);if(!rows.length)return"";
-    return`<h2>${t}</h2><div class="list">${rows.map(it=>{const d=daysLeft(it),T=TYPES[it.type]||TYPES.other;
-      const rep=it.repeat==="week"?" · semanal":it.repeat==="month"?" · mensal":it.repeat==="year"?" · anual":"";
-      const appt=isAppt(it);
-      const cost=+it.cost?` · ${fmtMoney(+it.cost)}`:"";
-      return`<article class="item"><div class="ico" aria-hidden="true">${T.i}</div>
-        <div><h3>${esc(it.name)}${it.example?'<span class="ex">exemplo</span>':""}</h3><div class="meta">${T.l} · ${fmtDate(it.date)}${appt?" · "+(it.time||"09:00"):""}${cost}${rep}${appt&&it.alerts?.length?" · "+it.alerts.length+" alerta"+(it.alerts.length>1?"s":""):""}</div></div>
-        <div class="when"><span class="pill ${s}">${appt?apptLabel(it):label(d)}</span><div class="acts">
-          ${it.repeat!=="none"?`<button type="button" data-renew="${it.id}">${appt?"Próximo":"Renovei"}</button>`:""}
-          <button type="button" data-edit="${it.id}">Editar</button></div></div></article>`}).join("")}</div>`}).join("");
-}
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 
-fType.innerHTML=Object.entries(TYPES).map(([k,v])=>`<option value="${k}">${v.l}</option>`).join("");
+function render(){
+  const late=items.filter(i=>status(i)==="late").length;
+  const soon=items.filter(i=>{const d=daysLeft(i);return d>=0&&d<=30&&status(i)!=="late"}).length;
+  const money=items.filter(i=>i.type==="sub"&&i.repeat==="month").reduce((s,i)=>s+(+i.cost||0),0)
+            +items.filter(i=>i.type==="sub"&&i.repeat==="year").reduce((s,i)=>s+(+i.cost||0)/12,0);
+  sLate.textContent=late;sSoon.textContent=soon;sMoney.textContent=fmtMoney(money);
+  hint.hidden=!items.some(i=>i.example);
+  const counts={all:items.length};items.forEach(i=>counts[i.type]=(counts[i.type]||0)+1);
+  filters.innerHTML=[["all",L.all],...TYPE_KEYS.filter(k=>counts[k]).map(k=>[k,L.types[k]])]
+    .map(([k,l])=>`<button class="chip" type="button" data-f="${k}" aria-pressed="${filter===k}">${l} · ${counts[k]||0}</button>`).join("");
+  const list=items.filter(i=>filter==="all"||i.type===filter).sort((a,b)=>daysLeft(a)-daysLeft(b));
+  if(!list.length){groups.innerHTML=`<div class="empty"><p><b>${L.emptyTitle}</b></p><p>${L.emptyText}</p></div>`;updatePlan();return}
+  const sections=[["late",L.secLate],["soon",L.secSoon],["ok",L.secOk]];
+  groups.innerHTML=sections.map(([s,title])=>{
+    const rows=list.filter(i=>status(i)===s);if(!rows.length)return"";
+    return`<h2>${title}</h2><div class="list">${rows.map(it=>{const d=daysLeft(it),tl=L.types[it.type]||L.types.other,appt=isAppt(it);
+      const rep=it.repeat&&it.repeat!=="none"?" · "+L.repShort[it.repeat]:"";
+      const cost=+it.cost?` · ${fmtMoney(+it.cost)}`:"";
+      return`<article class="item"><div class="ico" aria-hidden="true">${ICONS[it.type]||ICONS.other}</div>
+        <div><h3>${esc(it.name)}${it.example?`<span class="ex">${L.example}</span>`:""}</h3><div class="meta">${tl} · ${fmtDate(it.date)}${appt?" · "+fmtTime(it.time):""}${cost}${rep}${appt&&it.alerts?.length?" · "+L.nAlerts(it.alerts.length):""}</div></div>
+        <div class="when"><span class="pill ${s}">${appt?apptLabel(it):label(d)}</span><div class="acts">
+          ${it.repeat&&it.repeat!=="none"?`<button type="button" data-renew="${it.id}">${appt?L.next:L.renew}</button>`:""}
+          <button type="button" data-edit="${it.id}">${L.edit}</button></div></div></article>`}).join("")}</div>`}).join("");
+  updatePlan();
+}
 
-fAlerts.innerHTML=Object.entries(ALERTS).map(([k,v])=>`<label><input type="checkbox" id="al-${k}" value="${k}">${v.l}</label>`).join("");
+/* ---------- Formulário ---------- */
 function setAlerts(list){fAlerts.querySelectorAll("input").forEach(c=>c.checked=list.includes(c.value));limitAlerts()}
 function getAlerts(){return[...fAlerts.querySelectorAll("input:checked")].map(c=>c.value)}
 function limitAlerts(){const n=getAlerts().length;fAlerts.querySelectorAll("input").forEach(c=>c.disabled=!c.checked&&n>=MAX_ALERTS)}
 fAlerts.addEventListener("change",limitAlerts);
 function syncTypeUI(){const a=fType.value==="appt";
   document.querySelectorAll(".apptOnly").forEach(el=>el.hidden=!a);document.querySelectorAll(".notAppt").forEach(el=>el.hidden=a);
-  fNameLabel.textContent=a?"Compromisso":"O que vence?";fDateLabel.textContent=a?"Data":"Data de vencimento";
-  fName.placeholder=a?"Ex.: Dentista, salão, aula de inglês":"Ex.: Netflix, passaporte, garantia da TV"}
+  fNameLabel.textContent=a?L.lblAppt:L.lblWhat;fDateLabel.textContent=a?L.lblDate:L.lblDue;fName.placeholder=a?L.phAppt:L.phWhat}
 fType.addEventListener("change",syncTypeUI);
-function openForm(it,preset){editing=it||null;formTitle.textContent=it?(isAppt(it)?"Editar compromisso":"Editar lembrete"):(preset?"Novo compromisso":"Novo lembrete");
-  fName.value=it?.name||preset||"";fType.value=it?.type||(preset?"appt":"sub");fDate.value=it?.date||plus(preset?1:30);fCost.value=it&&+it.cost?it.cost:"";
+function openForm(it,preset){editing=it||null;formTitle.textContent=it?(isAppt(it)?L.formEditAppt:L.formEdit):(preset!=null?L.formNewAppt:L.formNew);
+  fName.value=it?.name||preset||"";fType.value=it?.type||(preset!=null?"appt":"sub");fDate.value=it?.date||plus(preset!=null?1:30);fCost.value=it&&+it.cost?it.cost:"";
   fTime.value=it?.time||"09:00";setAlerts(it?.alerts||["d1","d0"]);
   fRepeat.value=it?.repeat||"none";fWarn.value=String(it?.warn??7);delBtn.hidden=!it;
-  formQuick.hidden=!!it;newPresetRow.hidden=true;voiceText.textContent=VOICE_HINT;
+  formQuick.hidden=!!it;newPresetRow.hidden=true;voiceText.textContent=SR?L.voiceHint:L.voiceNoSR;
   syncTypeUI();sheetBg.hidden=false;setTimeout(()=>(preset?fDate:fName).focus(),30)}
-const closeForm=()=>{sheetBg.hidden=true;editing=null};
-
+const closeForm=()=>{sheetBg.hidden=true;editing=null;if(rec)rec.stop()};
 addBtn.onclick=()=>openForm();
 cancelBtn.onclick=closeForm;
 sheetBg.addEventListener("click",e=>{if(e.target===sheetBg)closeForm()});
@@ -342,119 +500,208 @@ delBtn.onclick=()=>{items=items.filter(i=>i!==editing);save();closeForm();render
 form.addEventListener("submit",e=>{e.preventDefault();
   const data={name:fName.value.trim(),type:fType.value,date:fDate.value,cost:parseFloat(fCost.value)||0,repeat:fRepeat.value,warn:+fWarn.value};
   if(data.type==="appt"){data.time=fTime.value||"09:00";data.alerts=getAlerts().slice(0,MAX_ALERTS);data.warn=apptWarnDays(data)}
-  else{delete data.time;data.alerts=undefined}
   if(!data.name||!data.date)return;
   const mine=items.filter(i=>!i.example).length;
   const growing=!editing||editing.example;
-  if(!active&&growing&&mine>=FREE_LIMIT){closeForm();openPay("Você chegou ao limite de 3 lembretes da versão gratuita. Libere a versão completa para cadastrar quantos quiser.");return}
+  if(!active&&growing&&mine>=FREE_LIMIT){closeForm();openPay(L.payLimit);return}
   if(editing){Object.assign(editing,data,{example:false});if(editing.type!=="appt"){delete editing.time;delete editing.alerts}}else items.push({...data,id:"i"+Date.now()});
   save();closeForm();render()});
 clearEx.onclick=()=>{items=items.filter(i=>!i.example);save();render()};
-document.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;
-  if(b.dataset.f){filter=b.dataset.f;render()}
-  if(b.dataset.edit)openForm(items.find(i=>i.id===b.dataset.edit));
-  if(b.dataset.renew){const it=items.find(i=>i.id===b.dataset.renew);renew(it);save();render()}});
+
 /* ---------- Botões de compromisso ---------- */
 function presetHTML(where){
-  return BASE_PRESETS.map(n=>`<button type="button" class="preset" data-preset="${esc(n)}">${esc(n)}</button>`).join("")
-   +customPresets.map((n,i)=>`<span class="preset"><button type="button" class="preset" style="border:0;padding:0;background:none" data-preset="${esc(n)}">${esc(n)}</button><button type="button" class="x" style="border:0;background:none;cursor:pointer" data-delpreset="${i}" aria-label="Apagar botão ${esc(n)}">✕</button></span>`).join("")
-   +`<button type="button" class="preset add" data-newpreset="${where}">+ Criar botão</button>`}
+  return basePresets().map(n=>`<button type="button" class="preset" data-preset="${esc(n)}">${esc(n)}</button>`).join("")
+   +customPresets.map((n,i)=>`<span class="preset"><button type="button" class="preset" style="border:0;padding:0;background:none" data-preset="${esc(n)}">${esc(n)}</button><button type="button" class="x" style="border:0;background:none;cursor:pointer" data-delpreset="${i}" aria-label="${esc(L.delPreset(n))}">✕</button></span>`).join("")
+   +`<button type="button" class="preset add" data-newpreset="${where}">${L.createBtn}</button>`}
 function renderPresets(){mainPresets.innerHTML=presetHTML("main");formPresets.innerHTML=presetHTML("form")}
 function addPreset(){const n=newPresetName.value.trim();if(!n)return;
-  if(![...BASE_PRESETS,...customPresets].some(x=>x.toLowerCase()===n.toLowerCase())){customPresets.push(n);savePresets()}
+  if(![...basePresets(),...customPresets].some(x=>x.toLowerCase()===n.toLowerCase())){customPresets.push(n);savePresets()}
   newPresetName.value="";newPresetRow.hidden=true;renderPresets();fName.value=n;fType.value="appt";syncTypeUI()}
 newPresetSave.onclick=addPreset;
 newPresetName.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();addPreset()}});
 document.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;
+  if(b.dataset.f){filter=b.dataset.f;render()}
+  if(b.dataset.edit)openForm(items.find(i=>i.id===b.dataset.edit));
+  if(b.dataset.renew){const it=items.find(i=>i.id===b.dataset.renew);renew(it);save();render()}
   if(b.dataset.preset){if(sheetBg.hidden)openForm(null,b.dataset.preset);else{fName.value=b.dataset.preset;fType.value="appt";syncTypeUI();fDate.focus()}}
   if(b.dataset.delpreset!==undefined){customPresets.splice(+b.dataset.delpreset,1);savePresets();renderPresets()}
   if(b.dataset.newpreset){if(sheetBg.hidden)openForm(null,"");newPresetRow.hidden=false;formQuick.hidden=false;setTimeout(()=>newPresetName.focus(),40)}});
-renderPresets();
 
-/* ---------- Comando de voz ---------- */
-const VOICE_HINT="Diga, por exemplo: “dentista sexta às 15 horas”.";
-const NUMS={um:1,uma:1,dois:2,duas:2,"três":3,tres:3,quatro:4,cinco:5,seis:6,sete:7,oito:8,nove:9,dez:10,onze:11,doze:12,treze:13,catorze:14,quatorze:14,quinze:15,dezesseis:16,dezessete:17,dezoito:18,dezenove:19,vinte:20,trinta:30};
-const MONTHS=["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
-const WEEK=["domingo","segunda","terça","quarta","quinta","sexta","sábado"];
-function parseVoice(raw){
-  // Limites de palavra que entendem acentos (\b do JavaScript não reconhece "ã", "à" etc.)
-  const R=(src,f="")=>new RegExp(src.replace(/<</g,"(?<![\\p{L}\\d])").replace(/>>/g,"(?![\\p{L}\\d])"),"u"+f);
+/* ================= Comando de voz (4 idiomas) ================= */
+const R=(src,f="")=>new RegExp(src.replace(/<</g,"(?<![\\p{L}\\d])").replace(/>>/g,"(?![\\p{L}\\d])"),"u"+f);
+const hm=(h,m)=>String(h).padStart(2,"0")+":"+String(m).padStart(2,"0");
+function nextWeekday(target){const base=today();const add=(target-base.getDay()+7)%7||7;return new Date(base.getTime()+add*DAY)}
+function dayMonth(day,mon){const base=today();const d=new Date(base.getFullYear(),mon,day);if(d<base)d.setFullYear(d.getFullYear()+1);return d}
+function dayOnly(day){const base=today();const d=new Date(base.getFullYear(),base.getMonth(),day);if(d<base)d.setMonth(d.getMonth()+1);return d}
+function wordsToNums(t,map,tens,joiner){
+  if(tens)t=t.replace(R("<<("+Object.keys(tens).join("|")+")"+joiner+"("+Object.keys(map).filter(k=>map[k]<10).join("|")+")>>","g"),(m,a,b)=>tens[a]+map[b]);
+  return t.replace(R("<<("+Object.keys(map).sort((a,b)=>b.length-a.length).join("|")+")>>","g"),m=>map[m])}
+
+// Sinônimos que apontam para os botões prontos (chave do botão)
+const SYN={
+ pt:{"veterinário":"vet","veterinária":"vet","veterinario":"vet","vet":"vet","tosa":"petgroom","tosar":"petgroom","banho":"petbath","pet shop":"petbath","petshop":"petbath","médico":"consult","medico":"consult","médica":"consult","consulta":"consult","cabeleireiro":"salon","cabeleireira":"salon","cabelo":"salon","salão":"salon","unha":"nails","unhas":"nails","manicure":"nails","barbeiro":"barber","barbearia":"barber","dentista":"dentist","aula":"course","curso":"course","exame":"exam","academia":"gym"},
+ es:{"veterinario":"vet","veterinaria":"vet","baño":"petbath","bañar":"petbath","corte de mascota":"petgroom","peluquería canina":"petgroom","médico":"consult","medico":"consult","doctor":"consult","consulta":"consult","peluquería":"salon","peluqueria":"salon","salón":"salon","uñas":"nails","manicura":"nails","barbería":"barber","barberia":"barber","barbero":"barber","dentista":"dentist","clase":"course","curso":"course","examen":"exam","análisis":"exam","gimnasio":"gym","gym":"gym"},
+ en:{"vet":"vet","veterinarian":"vet","grooming":"petgroom","groomer":"petgroom","pet bath":"petbath","bath":"petbath","doctor":"consult","doctor's":"consult","checkup":"exam","test":"exam","blood test":"exam","hair":"salon","salon":"salon","hairdresser":"salon","nails":"nails","manicure":"nails","barber":"barber","haircut":"barber","dentist":"dentist","class":"course","lesson":"course","course":"course","gym":"gym","workout":"gym"},
+ zh:{"宠物医院":"vet","兽医":"vet","宠物美容":"petgroom","宠物洗澡":"petbath","洗澡":"petbath","看医生":"consult","看病":"consult","医生":"consult","门诊":"consult","牙医":"dentist","牙科":"dentist","看牙":"dentist","美发":"salon","做头发":"salon","理发":"barber","剪头":"barber","美甲":"nails","体检":"exam","检查":"exam","上课":"course","课":"course","健身":"gym"}};
+function pickName(t,rest,stop){
+  const all=[...customPresets,...basePresets()];
+  let name=all.find(n=>t.includes(n.toLowerCase()));
+  if(!name){const syn=SYN[LANG];const k=Object.keys(syn).sort((a,b)=>b.length-a.length).find(k=>LANG==="zh"?t.includes(k):R("<<"+k+">>").test(t));if(k)name=L.presets[syn[k]]}
+  if(!name&&stop){name=rest.replace(stop," ").replace(/\s+/g," ").trim();name=name?name[0].toUpperCase()+name.slice(1):""}
+  return name}
+
+const PARSERS={
+pt(raw){
   let t=" "+raw.toLowerCase().replace(/[.,!?]/g," ").replace(/\s+/g," ")+" ";
-  const NUMW="um|uma|dois|duas|três|tres|quatro|cinco|seis|sete|oito|nove|dez|onze|doze|treze|catorze|quatorze|quinze|dezesseis|dezessete|dezoito|dezenove|vinte|trinta|quarenta|cinquenta";
-  const N2={...NUMS,quarenta:40,cinquenta:50};
-  t=t.replace(R("<<(vinte|trinta|quarenta|cinquenta) e (um|uma|dois|duas|três|tres|quatro|cinco|seis|sete|oito|nove)>>","g"),(m,a,b)=>N2[a]+N2[b]);
-  t=t.replace(R("<<("+NUMW+")>>","g"),m=>N2[m]);
-  t=t.replace(R("<<meio[- ]dia>>","g"),"12 horas").replace(R("<<meia[- ]noite>>","g"),"0 horas");
-  t=t.replace(R("<<e meia>>","g"),"e 30");
+  t=wordsToNums(t,{um:1,uma:1,dois:2,duas:2,"três":3,tres:3,quatro:4,cinco:5,seis:6,sete:7,oito:8,nove:9,dez:10,onze:11,doze:12,treze:13,catorze:14,quatorze:14,quinze:15,dezesseis:16,dezessete:17,dezoito:18,dezenove:19,vinte:20,trinta:30,quarenta:40,cinquenta:50},{vinte:20,trinta:30,quarenta:40,cinquenta:50}," e ");
+  t=t.replace(R("<<meio[- ]dia>>","g"),"12 horas").replace(R("<<meia[- ]noite>>","g"),"0 horas").replace(R("<<e meia>>","g"),"e 30");
   const out={};let rest=t;const cut=x=>{rest=rest.replace(x," ")};
-  // horário: "15h", "15:30", "15 horas e 30", "às 3 da tarde", "às 10 e 30"
   let m=t.match(R("<<(?:às |as |a )?(\\d{1,2})(?:h|:| ?horas?)(?: ?e)? ?(\\d{1,2})?(?: ?minutos?)?(?: (da manhã|da tarde|da noite))?>>"));
   if(!m)m=t.match(R("<<(?:às|as) (\\d{1,2})(?: e (\\d{1,2}))?(?: (da manhã|da tarde|da noite))?>>"));
-  if(m){let h=+m[1],mi=+(m[2]||0);if(/tarde|noite/.test(m[3]||"")&&h<12)h+=12;
-    if(h<24&&mi<60){out.time=String(h).padStart(2,"0")+":"+String(mi).padStart(2,"0");cut(m[0])}}
-  // data
-  const base=today();let d=null,x;
+  if(m){let h=+m[1],mi=+(m[2]||0);if(/tarde|noite/.test(m[3]||"")&&h<12)h+=12;if(h<24&&mi<60){out.time=hm(h,mi);cut(m[0])}}
+  let d=null,x;const base=today();
   if((x=t.match(R("<<depois de amanhã>>")))){d=new Date(base.getTime()+2*DAY);cut(x[0])}
   else if((x=t.match(R("<<amanhã>>")))){d=new Date(base.getTime()+DAY);cut(x[0])}
   else if((x=t.match(R("<<hoje>>")))){d=base;cut(x[0])}
-  if(!d&&(x=t.match(R("<<(?:na |no |nesta |neste |próxima |próximo )?(domingo|segunda|terça|quarta|quinta|sexta|sábado)(?:-feira| feira)?>>")))){
-    const target=WEEK.indexOf(x[1]);const add=(target-base.getDay()+7)%7||7;d=new Date(base.getTime()+add*DAY);cut(x[0])}
-  if(!d&&(x=t.match(R("<<(?:dia )?(\\d{1,2})(?: de |\\/)(janeiro|fevereiro|março|abril|maio|junho|julho|agosto|setembro|outubro|novembro|dezembro|\\d{1,2})>>")))){
-    const mon=isNaN(x[2])?MONTHS.indexOf(x[2]):+x[2]-1;d=new Date(base.getFullYear(),mon,+x[1]);if(d<base)d.setFullYear(d.getFullYear()+1);cut(x[0])}
-  if(!d&&(x=t.match(R("<<dia (\\d{1,2})>>")))){d=new Date(base.getFullYear(),base.getMonth(),+x[1]);if(d<base)d.setMonth(d.getMonth()+1);cut(x[0])}
+  if(!d&&(x=t.match(R("<<(?:na |no |nesta |neste |próxima |próximo )?(domingo|segunda|terça|quarta|quinta|sexta|sábado)(?:-feira| feira)?>>")))){d=nextWeekday(["domingo","segunda","terça","quarta","quinta","sexta","sábado"].indexOf(x[1]));cut(x[0])}
+  const MON=["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
+  if(!d&&(x=t.match(R("<<(?:dia )?(\\d{1,2})(?: de |\\/)("+MON.join("|")+"|\\d{1,2})>>")))){d=dayMonth(+x[1],isNaN(x[2])?MON.indexOf(x[2]):+x[2]-1);cut(x[0])}
+  if(!d&&(x=t.match(R("<<dia (\\d{1,2})>>")))){d=dayOnly(+x[1]);cut(x[0])}
   if(d)out.date=iso(d);
-  // nome: um botão conhecido, um sinônimo, ou o que sobrou da frase
-  const all=[...customPresets,...BASE_PRESETS];
-  const syn={"veterinário":"Veterinário","veterinária":"Veterinário","veterinario":"Veterinário","vet":"Veterinário","tosa":"Tosa do pet","tosar":"Tosa do pet","banho":"Banho do pet","pet shop":"Banho do pet","petshop":"Banho do pet","médico":"Consulta médica","medico":"Consulta médica","médica":"Consulta médica","consulta":"Consulta médica","cabeleireiro":"Salão de beleza","cabeleireira":"Salão de beleza","cabelo":"Salão de beleza","salão":"Salão de beleza","unha":"Manicure","unhas":"Manicure","barbeiro":"Barbearia","dentista":"Dentista","aula":"Curso"};
-  let name=all.find(n=>t.includes(n.toLowerCase()));
-  if(!name){const k=Object.keys(syn).find(k=>R("<<"+k+">>").test(t));if(k)name=syn[k]}
-  if(!name){name=rest.replace(R("<<(marcar|agendar|anotar|lembrar|lembra|me|de|do|da|o|a|na|no|para|pra|um|uma|às|as|horas?|feira|compromisso|e)>>","g")," ").replace(/\s+/g," ").trim();
-    name=name?name[0].toUpperCase()+name.slice(1):""}
+  const name=pickName(t,rest,R("<<(marcar|agendar|anotar|lembrar|lembra|me|de|do|da|o|a|na|no|para|pra|um|uma|às|as|horas?|feira|compromisso|e)>>","g"));if(name)out.name=name;
+  return out},
+es(raw){
+  let t=" "+raw.toLowerCase().replace(/[.,!?¡¿]/g," ").replace(/\s+/g," ")+" ";
+  t=wordsToNums(t,{uno:1,una:1,un:1,dos:2,tres:3,cuatro:4,cinco:5,seis:6,siete:7,ocho:8,nueve:9,diez:10,once:11,doce:12,trece:13,catorce:14,quince:15,"dieciséis":16,dieciseis:16,diecisiete:17,dieciocho:18,diecinueve:19,veinte:20,veintiuno:21,"veintidós":22,veintidos:22,"veintitrés":23,veintitres:23,veinticuatro:24,veinticinco:25,veintiséis:26,veintiseis:26,veintisiete:27,veintiocho:28,veintinueve:29,treinta:30,cuarenta:40,cincuenta:50},{treinta:30,cuarenta:40,cincuenta:50}," y ");
+  t=t.replace(R("<<mediodía>>","g"),"12 horas").replace(R("<<medianoche>>","g"),"0 horas").replace(R("<<y media>>","g"),"y 30").replace(R("<<y cuarto>>","g"),"y 15");
+  const out={};let rest=t;const cut=x=>{rest=rest.replace(x," ")};
+  let m=t.match(R("<<(?:a las |a la )?(\\d{1,2})(?::| ?h| ?horas?)(?: ?y)? ?(\\d{1,2})?(?: ?minutos?)?(?: (de la mañana|de la tarde|de la noche|am|pm))?>>"));
+  if(!m)m=t.match(R("<<(?:a las|a la) (\\d{1,2})(?: y (\\d{1,2}))?(?: (de la mañana|de la tarde|de la noche|am|pm))?>>"));
+  if(m){let h=+m[1],mi=+(m[2]||0);if(/tarde|noche|pm/.test(m[3]||"")&&h<12)h+=12;if(h<24&&mi<60){out.time=hm(h,mi);cut(m[0])}}
+  let d=null,x;const base=today();
+  if((x=t.match(R("<<pasado mañana>>")))){d=new Date(base.getTime()+2*DAY);cut(x[0])}
+  else if((x=t.match(R("(?<!la )<<mañana>>")))){d=new Date(base.getTime()+DAY);cut(x[0])}
+  else if((x=t.match(R("<<hoy>>")))){d=base;cut(x[0])}
+  const WD=["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
+  if(!d&&(x=t.match(R("<<(?:el |este |próximo )?(domingo|lunes|martes|miércoles|miercoles|jueves|viernes|sábado|sabado)>>")))){d=nextWeekday(WD.indexOf(x[1].replace("miercoles","miércoles").replace("sabado","sábado")));cut(x[0])}
+  const MON=["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+  if(!d&&(x=t.match(R("<<(?:el )?(?:día )?(\\d{1,2})(?: de |\\/)("+MON.join("|")+"|\\d{1,2})>>")))){d=dayMonth(+x[1],isNaN(x[2])?MON.indexOf(x[2]):+x[2]-1);cut(x[0])}
+  if(!d&&(x=t.match(R("<<(?:el )?día (\\d{1,2})>>")))){d=dayOnly(+x[1]);cut(x[0])}
+  if(d)out.date=iso(d);
+  const name=pickName(t,rest,R("<<(agendar|anotar|recordar|recuérdame|recuerdame|cita|con|el|la|los|las|de|del|a|al|en|para|un|una|y|horas?)>>","g"));if(name)out.name=name;
+  return out},
+en(raw){
+  let t=" "+raw.toLowerCase().replace(/[.,!?]/g," ").replace(/\s+/g," ")+" ";
+  t=wordsToNums(t,{one:1,two:2,three:3,four:4,five:5,six:6,seven:7,eight:8,nine:9,ten:10,eleven:11,twelve:12,thirteen:13,fourteen:14,fifteen:15,sixteen:16,seventeen:17,eighteen:18,nineteen:19,twenty:20,thirty:30,forty:40,fifty:50},{twenty:20,thirty:30,forty:40,fifty:50},"[- ]");
+  t=t.replace(R("<<noon|midday>>","g"),"12:00").replace(R("<<midnight>>","g"),"0:00").replace(/(\d)\s*([ap])\s*\.?\s*m\b/g,"$1 $2m");
+  t=t.replace(R("<<half past (\\d{1,2})>>","g"),"$1:30").replace(R("<<quarter past (\\d{1,2})>>","g"),"$1:15");
+  const out={};let rest=t;const cut=x=>{rest=rest.replace(x," ")};
+  let m=t.match(R("<<(?:at )?(\\d{1,2})(?::(\\d{2})| (\\d{2})(?= ?[ap]m))? ?(am|pm|o'clock|in the morning|in the afternoon|in the evening|at night)?>>"));
+  if(m&&!(m[2]||m[3]||m[4]||/^ ?at /.test(m[0])))m=null;
+  if(m){let h=+m[1],mi=+(m[2]||m[3]||0);const ap=m[4]||"";if(/pm|afternoon|evening|night/.test(ap)&&h<12)h+=12;if(/am|morning/.test(ap)&&h===12)h=0;
+    if(h<24&&mi<60){out.time=hm(h,mi);cut(m[0])}}
+  let d=null,x;const base=today();
+  if((x=t.match(R("<<(?:the )?day after tomorrow>>")))){d=new Date(base.getTime()+2*DAY);cut(x[0])}
+  else if((x=t.match(R("<<tomorrow>>")))){d=new Date(base.getTime()+DAY);cut(x[0])}
+  else if((x=t.match(R("<<today|tonight>>")))){d=base;cut(x[0])}
+  const WD=["sunday","monday","tuesday","wednesday","thursday","friday","saturday"];
+  if(!d&&(x=t.match(R("<<(?:on |this |next )?("+WD.join("|")+")>>")))){d=nextWeekday(WD.indexOf(x[1]));cut(x[0])}
+  const MON=["january","february","march","april","may","june","july","august","september","october","november","december"];
+  const MS=MON.map(s=>s.slice(0,3));
+  if(!d&&(x=t.match(R("<<(?:on )?("+MON.join("|")+"|"+MS.join("|")+") (\\d{1,2})(?:st|nd|rd|th)?>>")))){const i=MON.indexOf(x[1])>=0?MON.indexOf(x[1]):MS.indexOf(x[1]);d=dayMonth(+x[2],i);cut(x[0])}
+  if(!d&&(x=t.match(R("<<(?:on )?(?:the )?(\\d{1,2})(?:st|nd|rd|th)?(?: of)? ("+MON.join("|")+")>>")))){d=dayMonth(+x[1],MON.indexOf(x[2]));cut(x[0])}
+  if(!d&&(x=t.match(R("<<(\\d{1,2})\\/(\\d{1,2})>>")))){d=dayMonth(+x[2],+x[1]-1);cut(x[0])}
+  if(!d&&(x=t.match(R("<<on the (\\d{1,2})(?:st|nd|rd|th)?>>")))){d=dayOnly(+x[1]);cut(x[0])}
+  if(d)out.date=iso(d);
+  const name=pickName(t,rest,R("<<(book|schedule|remind|me|appointment|with|the|a|an|at|on|for|to|my|of|and)>>","g"));if(name)out.name=name;
+  return out},
+zh(raw){
+  let t=raw.replace(/[，。！？、\s]/g,"");
+  // 中文数字 → 阿拉伯数字（到 59）
+  const D={"零":0,"〇":0,"一":1,"二":2,"两":2,"三":3,"四":4,"五":5,"六":6,"七":7,"八":8,"九":9};
+  t=t.replace(/[零〇一二两三四五六七八九十]+/g,s=>{if(!/十/.test(s))return s.length===1&&D[s]!=null?String(D[s]):s.split("").map(c=>D[c]??c).join("");
+    const [a,b]=s.split("十");return String((a?D[a]:1)*10+(b?D[b]:0))});
+  const out={};let rest=t;const cut=x=>{rest=rest.replace(x,"")};
+  let m=t.match(/(早上|上午|中午|下午|晚上|傍晚)?(\d{1,2})[点點:：时](半|(\d{1,2})分?)?/);
+  if(m){let h=+m[2],mi=m[3]==="半"?30:+(m[4]||0);if(/下午|晚上|傍晚/.test(m[1]||"")&&h<12)h+=12;if(m[1]==="中午"&&h<6)h+=12;
+    if(h<24&&mi<60){out.time=hm(h,mi);cut(m[0])}}
+  let d=null,x;const base=today();
+  if((x=t.match(/后天/))){d=new Date(base.getTime()+2*DAY);cut(x[0])}
+  else if((x=t.match(/明天|明日/))){d=new Date(base.getTime()+DAY);cut(x[0])}
+  else if((x=t.match(/今天|今日|今晚/))){d=base;cut(x[0])}
+  if(!d&&(x=t.match(/(?:下|这|本)?(?:周|星期|礼拜)([1-6日天])/))){const k=x[1];d=nextWeekday(k==="日"||k==="天"?0:+k);cut(x[0])}
+  if(!d&&(x=t.match(/(\d{1,2})月(\d{1,2})[日号]?/))){d=dayMonth(+x[2],+x[1]-1);cut(x[0])}
+  if(!d&&(x=t.match(/(\d{1,2})[日号]/))){d=dayOnly(+x[1]);cut(x[0])}
+  if(d)out.date=iso(d);
+  let name=pickName(t,rest,null);
+  if(!name){name=rest.replace(/提醒我|帮我|预约|安排|记得|要|去|在|的|有|和/g,"").trim()}
   if(name)out.name=name;
   return out}
+};
+const parseVoice=s=>PARSERS[LANG](s);
+
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;let rec=null;
-if(!SR){micBtn.hidden=true;voiceText.textContent="Para falar, toque no microfone do teclado do celular e dite no campo abaixo.";}
+function micIdle(){micBtn.setAttribute("aria-pressed","false");micBtn.textContent=L.mic;rec=null}
+if(!SR)micBtn.hidden=true;
 micBtn.onclick=()=>{
   if(rec){rec.stop();return}
-  rec=new SR();rec.lang="pt-BR";rec.interimResults=true;rec.maxAlternatives=1;
-  micBtn.setAttribute("aria-pressed","true");micBtn.textContent="■ Parar";voiceText.textContent="Ouvindo…";
+  rec=new SR();rec.lang=L.speech;rec.interimResults=true;rec.maxAlternatives=1;
+  micBtn.setAttribute("aria-pressed","true");micBtn.textContent=L.micStop;voiceText.textContent=L.listening;
   let final="";
   rec.onresult=e=>{let txt="";for(const r of e.results)txt+=r[0].transcript;voiceText.textContent="“"+txt+"”";if(e.results[e.results.length-1].isFinal)final=txt};
-  rec.onerror=e=>{voiceText.textContent=e.error==="not-allowed"?"O microfone foi bloqueado. Libere nas configurações do navegador.":"Não entendi. Toque em Falar e tente de novo."};
-  rec.onend=()=>{micBtn.setAttribute("aria-pressed","false");micBtn.textContent="🎤 Falar";rec=null;
-    if(!final)return;const r=parseVoice(final);
+  rec.onerror=e=>{voiceText.textContent=e.error==="not-allowed"?L.voiceBlocked:L.voiceRetry};
+  rec.onend=()=>{micIdle();if(!final)return;const r=parseVoice(final);
     fType.value="appt";syncTypeUI();if(r.name)fName.value=r.name;if(r.date)fDate.value=r.date;if(r.time)fTime.value=r.time;
-    voiceText.textContent="“"+final+"”. Confira os campos e toque em Salvar."};
-  try{rec.start()}catch(e){voiceText.textContent="Não foi possível usar o microfone aqui.";micBtn.setAttribute("aria-pressed","false");micBtn.textContent="🎤 Falar";rec=null}
+    voiceText.textContent=L.voiceDone(final)};
+  try{rec.start()}catch(e){voiceText.textContent=L.voiceFail;micIdle()}
 };
 
-render();save();
-updatePlan();
-const _render=render;render=function(){_render();updatePlan()};
+/* ================= Aplicar idioma ================= */
+let alertState="intro";
+function applyLang(){
+  L=I18N[LANG];CUR=currency();document.documentElement.lang=L.locale;langSel.value=LANG;
+  document.querySelectorAll("[data-i18n]").forEach(el=>{el.textContent=L[el.dataset.i18n]});
+  if(L.buyHtml)buyLink.innerHTML=L.buyHtml;
+  document.querySelectorAll("[data-i18n-ph]").forEach(el=>{el.placeholder=L[el.dataset.i18nPh]});
+  document.querySelectorAll("[data-i18n-aria]").forEach(el=>{el.setAttribute("aria-label",L[el.dataset.i18nAria])});
+  fType.innerHTML=TYPE_KEYS.map(k=>`<option value="${k}">${L.types[k]}</option>`).join("");
+  const keepAl=getAlerts();
+  fAlerts.innerHTML=Object.keys(ALERT_MIN).map(k=>`<label><input type="checkbox" id="al-${k}" value="${k}">${L.alerts[k]}</label>`).join("");
+  setAlerts(keepAl);
+  [...fWarn.options].forEach(o=>o.textContent=L.warnN(o.value));
+  micBtn.textContent=L.mic;
+  refreshAlertUI();renderPresets();render();
+  if(!sheetBg.hidden)syncTypeUI();
+  idb("readwrite",s=>s.put(LANG,"lang")).catch(()=>{});
+}
+langSel.addEventListener("change",()=>{LANG=langSel.value;try{localStorage.setItem(LKEY,LANG)}catch(e){}
+  // Exemplos acompanham o idioma escolhido
+  if(items.some(i=>i.example)){const mine=items.filter(i=>!i.example);L=I18N[LANG];items=[...mine,...samples()];save()}
+  applyLang()});
+
+/* ---------- Pagamento ---------- */
 planBadge.onclick=()=>{if(!active)openPay()};
 payClose.onclick=()=>{payBg.hidden=true};
 payBg.addEventListener("click",e=>{if(e.target===payBg)payBg.hidden=true});
 payForm.addEventListener("submit",async e=>{e.preventDefault();
-  if(await codeOk(payCode.value)){activate();payBg.hidden=true;alertText.textContent="Versão completa ativada. Obrigado pela compra!"}else payErr.hidden=false});
-// Link de ativação: .../#ativar-LT-XXXX-XXXX-XXXX
-(async()=>{const m=location.hash.match(/^#ativar-(.+)$/);if(!m)return;
-  history.replaceState(null,"",location.pathname);
-  if(await codeOk(decodeURIComponent(m[1]))){activate();alertText.textContent="Versão completa ativada. Obrigado pela compra!"}
-  else openPay("Esse link de ativação não funcionou. Digite o código abaixo.")})();
+  if(await codeOk(payCode.value)){activate();payBg.hidden=true;alertState="activated";refreshAlertUI()}else payErr.hidden=false});
 
 /* ---------- Avisos no celular ---------- */
 const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
 const standalone=matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
 let swReg=null;
 const canNotify="Notification" in window&&"serviceWorker" in navigator;
-
 function refreshAlertUI(){
+  if(alertState==="activated"){alertText.textContent=L.activated;return}
+  if(alertState==="icsDone"){alertText.textContent=L.icsDone;return}
+  if(alertState==="icsNone"){alertText.textContent=L.icsNone;return}
+  alertText.textContent=L.alertIntro;
   if(!canNotify){
-    if(isIOS&&!standalone){iosTip.hidden=false;notifBtn.hidden=true;alertText.textContent="Para receber avisos, instale o app primeiro."}
-    else{notifBtn.hidden=true;alertText.textContent="Este navegador não mostra avisos. Use “Adicionar ao calendário” para ser lembrado mesmo assim."}
+    if(isIOS&&!standalone){iosTip.hidden=false;notifBtn.hidden=true;alertText.textContent=L.installFirst}
+    else{notifBtn.hidden=true;alertText.textContent=L.noNotif}
     return}
-  if(Notification.permission==="granted"){notifBtn.hidden=true;alertText.innerHTML='<span class="on">Avisos ativados.</span> Para garantir o aviso mesmo com o app fechado, adicione também ao calendário.'}
-  else if(Notification.permission==="denied"){notifBtn.hidden=true;alertText.textContent="Os avisos estão bloqueados nas configurações do navegador. Use “Adicionar ao calendário”."}
+  if(Notification.permission==="granted"){notifBtn.hidden=true;alertText.innerHTML=L.notifOn}
+  else if(Notification.permission==="denied"){notifBtn.hidden=true;alertText.textContent=L.notifBlocked}
 }
 async function startSW(){
   if(!("serviceWorker" in navigator))return;
@@ -465,40 +712,45 @@ async function startSW(){
     }}catch(e){}
 }
 notifBtn.onclick=async()=>{
-  try{const p=await Notification.requestPermission();refreshAlertUI();if(p==="granted"){await startSW()}}
-  catch(e){alertText.textContent="Não foi possível ativar os avisos aqui. Use “Adicionar ao calendário”."}
+  try{const p=await Notification.requestPermission();alertState="intro";refreshAlertUI();if(p==="granted"){await startSW()}}
+  catch(e){alertText.textContent=L.notifFail}
 };
 document.addEventListener("visibilitychange",()=>{if(!document.hidden&&swReg&&Notification.permission==="granted")swReg.active?.postMessage("check")});
-refreshAlertUI();startSW();
 
 /* ---------- Exportar para o calendário (.ics com alarmes) ---------- */
 function icsEscape(s){return String(s).replace(/[\\;,]/g,m=>"\\"+m).replace(/\n/g,"\\n")}
 function buildICS(list){
   const stamp=new Date().toISOString().replace(/[-:]/g,"").slice(0,15)+"Z";
-  const ev=list.map(it=>{
-    if(isAppt(it)){const t=(it.time||"09:00").replace(":","")+"00";const st=it.date.replace(/-/g,"")+"T"+t;
-      const endD=new Date(new Date(it.date+"T"+(it.time||"09:00")+":00").getTime()+3600000);
+  const RR={week:"RRULE:FREQ=WEEKLY\r\n",month:"RRULE:FREQ=MONTHLY\r\n",year:"RRULE:FREQ=YEARLY\r\n"};
+  const ev=list.map(it=>{const rr=RR[it.repeat]||"";
+    if(isAppt(it)){const st=it.date.replace(/-/g,"")+"T"+(it.time||"09:00").replace(":","")+"00";
+      const start=new Date(it.date+"T"+(it.time||"09:00")+":00");const endD=new Date(start.getTime()+3600000);
       const en=iso(endD).replace(/-/g,"")+"T"+String(endD.getHours()).padStart(2,"0")+String(endD.getMinutes()).padStart(2,"0")+"00";
-      const rr=it.repeat==="week"?"RRULE:FREQ=WEEKLY\r\n":it.repeat==="month"?"RRULE:FREQ=MONTHLY\r\n":it.repeat==="year"?"RRULE:FREQ=YEARLY\r\n":"";
-      const start=new Date(it.date+"T"+(it.time||"09:00")+":00");
       const al=alertTimes(it).map(a=>{const mins=Math.max(0,Math.round((start-a.at)/60000));
-        return`BEGIN:VALARM\r\nACTION:DISPLAY\r\nDESCRIPTION:${icsEscape(it.name+" – "+ALERTS[a.k].l)}\r\nTRIGGER:-PT${mins}M\r\nEND:VALARM\r\n`}).join("");
-      return`BEGIN:VEVENT\r\nUID:${it.id}@lembratudo\r\nDTSTAMP:${stamp}\r\nDTSTART:${st}\r\nDTEND:${en}\r\n${rr}SUMMARY:${icsEscape(it.name)}\r\nDESCRIPTION:${icsEscape("Compromisso · Lembra Tudo")}\r\n${al}END:VEVENT\r\n`}
+        return`BEGIN:VALARM\r\nACTION:DISPLAY\r\nDESCRIPTION:${icsEscape(it.name+" – "+L.alerts[a.k])}\r\nTRIGGER:-PT${mins}M\r\nEND:VALARM\r\n`}).join("");
+      return`BEGIN:VEVENT\r\nUID:${it.id}@lembratudo\r\nDTSTAMP:${stamp}\r\nDTSTART:${st}\r\nDTEND:${en}\r\n${rr}SUMMARY:${icsEscape(it.name)}\r\nDESCRIPTION:${icsEscape(L.icsAppt)}\r\n${al}END:VEVENT\r\n`}
     const d=it.date.replace(/-/g,"");const end=iso(new Date(new Date(it.date+"T00:00:00").getTime()+DAY)).replace(/-/g,"");
-    const rr=it.repeat==="week"?"RRULE:FREQ=WEEKLY\r\n":it.repeat==="month"?"RRULE:FREQ=MONTHLY\r\n":it.repeat==="year"?"RRULE:FREQ=YEARLY\r\n":"";
-    const T=(TYPES[it.type]||TYPES.other).l;const cost=+it.cost?` (${fmtMoney(+it.cost)})`:"";
-    return`BEGIN:VEVENT\r\nUID:${it.id}@lembratudo\r\nDTSTAMP:${stamp}\r\nDTSTART;VALUE=DATE:${d}\r\nDTEND;VALUE=DATE:${end}\r\n${rr}SUMMARY:${icsEscape("Vence: "+it.name+cost)}\r\nDESCRIPTION:${icsEscape(T+" · lembrete do Lembra Tudo")}\r\n`+
-      `BEGIN:VALARM\r\nACTION:DISPLAY\r\nDESCRIPTION:${icsEscape(it.name+" vence em "+it.warn+" dias")}\r\nTRIGGER:-P${Math.max(it.warn-1,0)}DT15H\r\nEND:VALARM\r\n`+
-      `BEGIN:VALARM\r\nACTION:DISPLAY\r\nDESCRIPTION:${icsEscape(it.name+" vence hoje")}\r\nTRIGGER:PT9H\r\nEND:VALARM\r\nEND:VEVENT\r\n`}).join("");
-  return`BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Lembra Tudo//PT-BR\r\nCALSCALE:GREGORIAN\r\nX-WR-CALNAME:Lembra Tudo\r\n${ev}END:VCALENDAR\r\n`}
+    const cost=+it.cost?` (${fmtMoney(+it.cost)})`:"";
+    return`BEGIN:VEVENT\r\nUID:${it.id}@lembratudo\r\nDTSTAMP:${stamp}\r\nDTSTART;VALUE=DATE:${d}\r\nDTEND;VALUE=DATE:${end}\r\n${rr}SUMMARY:${icsEscape(L.icsDue(it.name+cost))}\r\nDESCRIPTION:${icsEscape(L.icsDesc(L.types[it.type]||L.types.other))}\r\n`+
+      `BEGIN:VALARM\r\nACTION:DISPLAY\r\nDESCRIPTION:${icsEscape(L.icsDueIn(it.name,it.warn))}\r\nTRIGGER:-P${Math.max(it.warn-1,0)}DT15H\r\nEND:VALARM\r\n`+
+      `BEGIN:VALARM\r\nACTION:DISPLAY\r\nDESCRIPTION:${icsEscape(L.icsDueToday(it.name))}\r\nTRIGGER:PT9H\r\nEND:VALARM\r\nEND:VEVENT\r\n`}).join("");
+  return`BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Lembra Tudo//${LANG.toUpperCase()}\r\nCALSCALE:GREGORIAN\r\nX-WR-CALNAME:Lembra Tudo\r\n${ev}END:VCALENDAR\r\n`}
 icsBtn.onclick=()=>{
   const list=items.filter(i=>!i.example);
-  if(!list.length){alertText.textContent="Cadastre seus próprios itens primeiro. Os exemplos não vão para o calendário.";return}
+  if(!list.length){alertState="icsNone";refreshAlertUI();return}
   const url=URL.createObjectURL(new Blob([buildICS(list)],{type:"text/calendar"}));
   const a=document.createElement("a");a.href=url;a.download="lembra-tudo.ics";document.body.appendChild(a);a.click();a.remove();
   setTimeout(()=>URL.revokeObjectURL(url),5000);
-  alertText.textContent="Abra o arquivo baixado e confirme “Adicionar” para os lembretes irem para o calendário do celular.";
+  alertState="icsDone";refreshAlertUI();
 };
+
+/* ---------- Início ---------- */
+applyLang();save();startSW();
+// Link de ativação: .../#ativar-LT-XXXX-XXXX-XXXX
+(async()=>{const m=location.hash.match(/^#ativar-(.+)$/);if(!m)return;
+  history.replaceState(null,"",location.pathname);
+  if(await codeOk(decodeURIComponent(m[1]))){activate();alertState="activated";refreshAlertUI()}
+  else openPay(L.payBadLink)})();
 </script>
 </body>
 </html>

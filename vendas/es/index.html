@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lembra Tudo</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Te avisa antes de que venzan suscripciones, documentos, garantías y cuentas. US$ 5, pago único. Sin registro, sin mensualidad, funciona sin internet.">
+<meta property="og:title" content="Lembra Tudo: nunca más pagues una suscripción olvidada">
+<meta property="og:description" content="Te avisa antes de que venzan suscripciones, documentos, pasaporte, garantías y cuentas. US$ 5 una sola vez.">
+<meta name="color-scheme" content="light only">
+<meta name="theme-color" content="#FAF6EE">
+<link rel="icon" href="../../icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: navy hero with a phone "vencimentos" card, then one calm column of sections; lavender is reserved for the buy buttons and the warning dots */
+:root{
+  color-scheme:light;
+  --yellow:#F7E7A6; --green:#CDEBD4; --purple:#DCCFF5; --blue:#CFE6F7;
+  --bg:#FAF6EE; --surface:#FFFFFF; --ink:#343A46; --muted:#787B84; --line:#ECE4D6;
+  --navy:#DDEEFA; --navy-2:#DCF0E1; --on-navy:#2F3A4A; --on-navy-muted:#5D6878;
+  --accent:#D8CBF4; --accent-ink:#2E2650; --accent-strong:#6E56B8;
+  --late:#B5564F; --soon:#8C6A12; --ok:#3A7D58;
+  --late-bg:#FBE3DF; --soon-bg:#FAEDB9; --ok-bg:#D6EFDC;
+  --display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --body:"Figtree","Segoe UI",system-ui,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.55}
+[hidden]{display:none!important}
+img{max-width:100%}
+a{color:inherit}
+.in{max-width:1080px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0}
+h2{font-weight:800;font-size:clamp(28px,4.2vw,42px);line-height:1.08;letter-spacing:-.015em}
+h3{font-weight:600;font-size:20px;line-height:1.2}
+p{margin:0}
+.eyebrow{font:700 13px var(--body);letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.lead{font-size:19px;color:var(--muted);max-width:60ch}
+
+/* Buy button */
+.buy{display:inline-flex;align-items:center;gap:10px;background:var(--accent);color:var(--accent-ink);font:700 18px var(--body);text-decoration:none;border-radius:14px;padding:16px 26px;box-shadow:0 6px 18px rgba(110,86,184,.22);transition:transform .15s ease,box-shadow .15s ease}
+.buy:hover{transform:translateY(-1px);box-shadow:0 8px 22px rgba(110,86,184,.3)}
+.buy:focus-visible,.chip:focus-visible,summary:focus-visible,.top-buy:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.buy small{font-weight:600;opacity:.75;font-size:14px}
+.pay{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:14px;color:var(--on-navy-muted);margin-top:14px}
+.pay span{display:inline-flex;align-items:center;gap:6px}
+.pay span::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent)}
+
+/* Hero */
+.hero{background:var(--navy);color:var(--on-navy);margin-top:calc(-1 * env(safe-area-inset-top,0px));padding-top:env(safe-area-inset-top,0px)}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:18px}
+.brand{display:flex;align-items:center;gap:10px;font:800 21px var(--display)}
+.logo{width:36px;height:36px;border-radius:10px;background:var(--yellow);color:var(--accent-ink);display:grid;place-items:center;font:800 19px var(--display)}
+.top-buy{font:700 15px var(--body);color:var(--on-navy);text-decoration:none;border:1.5px solid var(--accent);border-radius:999px;padding:8px 16px;white-space:nowrap}
+.top-buy:hover{background:var(--accent);color:var(--accent-ink)}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:48px;align-items:center;padding-block:40px 72px}
+.hero h1{font-weight:800;font-size:clamp(38px,6.2vw,66px);line-height:1;letter-spacing:-.025em}
+.hero h1 em{font-style:normal;color:var(--accent-strong)}
+.hero .lead{color:var(--on-navy-muted);margin-top:20px}
+.hero .cta{margin-top:30px}
+
+/* Phone mock */
+.phone{background:var(--bg);color:var(--ink);border-radius:30px;padding:18px 16px 20px;border:8px solid var(--surface);max-width:340px;margin-left:auto;box-shadow:0 24px 50px rgba(110,86,184,.18);transform:rotate(1.5deg)}
+.phone .pt{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px}
+.phone .pt b{font:800 18px var(--display)}
+.phone .pt span{font-size:12px;color:var(--muted)}
+.sum{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.sum div{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:9px 10px}
+.sum b{display:block;font:800 19px/1.1 var(--display);font-variant-numeric:tabular-nums}
+.sum span{font-size:11px;color:var(--muted)}
+.item{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 11px;margin-top:7px}
+.item .t{flex:1;min-width:0}
+.item .t b{display:block;font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item .t span{font-size:12px;color:var(--muted)}
+.pill{font-size:11px;font-weight:700;border-radius:999px;padding:3px 8px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.pill.late{background:var(--late-bg);color:var(--late)}
+.pill.soon{background:var(--soon-bg);color:var(--soon)}
+.pill.ok{background:var(--ok-bg);color:var(--ok)}
+.item:first-of-type{animation:nudge 2.8s ease-in-out 1s 2}
+@keyframes nudge{0%,100%{transform:none}8%{transform:translateX(-3px)}16%{transform:translateX(3px)}24%{transform:none}}
+
+/* Sections */
+section{padding-block:80px}
+.sec-head{display:grid;gap:14px;max-width:720px;margin-bottom:36px}
+
+/* Math */
+.math{background:var(--surface);border-block:1px solid var(--line)}
+.math-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px;align-items:start}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.chip{font:600 15px var(--body);border:1.5px solid var(--line);background:var(--bg);color:var(--ink);border-radius:999px;padding:9px 15px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.receipt{background:var(--bg);border:1px solid var(--line);border-radius:18px;padding:26px;font-variant-numeric:tabular-nums}
+.row{display:flex;justify-content:space-between;gap:16px;padding-block:10px;border-bottom:1px dashed var(--line);font-size:16px}
+.row span:first-child{color:var(--muted)}
+.row b{font-weight:700}
+.row.big{border-bottom:0;padding-top:16px;align-items:baseline}
+.row.big span:first-child{color:var(--ink);font-weight:600}
+.row.big b{font:800 34px/1 var(--display);color:var(--late)}
+.receipt .note{font-size:14px;color:var(--muted);margin-top:14px}
+.receipt .verdict{margin-top:18px;background:var(--ok-bg);color:var(--ok);border-radius:12px;padding:12px 14px;font-weight:600;font-size:15px}
+
+/* Categories */
+.cats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.cat{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px;display:grid;gap:8px;align-content:start}
+.cat .ic{width:42px;height:42px;border-radius:12px;background:var(--bg);display:grid;place-items:center;margin-bottom:6px}
+.cat .ic svg{width:22px;height:22px;stroke:var(--ink);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.cat p{color:var(--muted);font-size:15px}
+.cat.wide{grid-column:span 1}
+.cat.over{background:var(--navy);color:var(--on-navy);border-color:var(--navy)}
+.cat.over p{color:var(--on-navy-muted)}
+.cat.over b{font:800 40px/1 var(--display);color:var(--accent-strong);font-variant-numeric:tabular-nums}
+
+/* Steps */
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px;counter-reset:s}
+.step{display:grid;gap:8px;align-content:start;counter-increment:s}
+.step::before{content:counter(s);font:800 15px var(--display);width:34px;height:34px;border-radius:50%;border:2px solid var(--ink);display:grid;place-items:center;margin-bottom:6px}
+.step p{color:var(--muted);font-size:16px}
+
+/* Privacy */
+.priv{background:var(--navy);color:var(--on-navy)}
+.priv .eyebrow{color:var(--on-navy-muted)}
+.priv .lead{color:var(--on-navy-muted)}
+.priv-list{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px;margin-top:40px}
+.priv-list div{border-top:2px solid var(--accent);padding-top:14px;display:grid;gap:6px}
+.priv-list b{font:600 19px var(--display)}
+.priv-list span{font-size:15px;color:var(--on-navy-muted)}
+
+/* Price */
+.price-card{background:var(--surface);border:1px solid var(--line);border-radius:24px;padding:40px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px;align-items:center}
+.price{font:800 clamp(64px,9vw,96px)/.9 var(--display);letter-spacing:-.03em}
+.price sup{font-size:.36em;vertical-align:top;position:relative;top:.35em;margin-right:4px;letter-spacing:0}
+.price-sub{font-size:18px;color:var(--muted);margin-top:10px}
+.checks{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.checks li{display:flex;gap:12px;align-items:flex-start}
+.checks li::before{content:"";flex:none;width:20px;height:20px;margin-top:3px;border-radius:6px;background:var(--ok-bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5 10.5l3 3 7-7' fill='none' stroke='%231E7F55' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/16px no-repeat}
+.price-card .pay{color:var(--muted)}
+.guarantee{margin-top:18px;font-size:15px;color:var(--muted)}
+.guarantee b{color:var(--ink)}
+
+/* FAQ */
+.faq{max-width:760px}
+details{border-bottom:1px solid var(--line)}
+summary{cursor:pointer;list-style:none;padding:20px 36px 20px 0;font:600 18px var(--body);position:relative}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";position:absolute;right:4px;top:16px;font:600 26px var(--display);color:var(--muted);transition:transform .2s}
+details[open] summary::after{transform:rotate(45deg)}
+details p{padding:0 0 22px;color:var(--muted);max-width:65ch}
+
+/* Final */
+.final{text-align:center;padding-block:90px}
+.final h2{max-width:18ch;margin:0 auto}
+.final .lead{margin:16px auto 30px}
+footer{border-top:1px solid var(--line);padding-block:28px;font-size:14px;color:var(--muted)}
+footer .in{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+
+@media (max-width:860px){
+  .hero-grid,.math-grid,.price-card{grid-template-columns:minmax(0,1fr)}
+  .hero-grid{gap:44px;padding-block:24px 60px}
+  .phone{margin:0 auto;transform:none}
+  .cats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .steps{grid-template-columns:minmax(0,1fr)}
+  .priv-list{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .price-card{padding:28px}
+  section{padding-block:60px}
+}
+@media (max-width:520px){
+  body{font-size:16px}
+  .cats,.priv-list{grid-template-columns:minmax(0,1fr)}
+  .buy{width:100%;justify-content:center}
+  .top-buy{padding:7px 12px;font-size:14px}
+}
+.langs{display:flex;gap:6px;font:600 13px var(--body)}.langs a{color:var(--on-navy-muted);text-decoration:none;padding:4px 6px;border-radius:6px}.langs a[aria-current]{color:var(--on-navy);background:var(--surface)}
+.price s,.buy s{opacity:.55;font-weight:500}
+.price .old{display:block;font-size:.32em;letter-spacing:0;margin-bottom:8px;color:var(--muted)}
+@media (max-width:520px){.bar{flex-wrap:wrap;gap:10px}}
+</style>
+</head>
+<body>
+
+<!--
+  LINK DE PAGAMENTO
+  Troque o endereço abaixo pelo link de checkout da Hotmart ou do Gumroad.
+  Todos os botões "Comprar" da página usam este mesmo link.
+-->
+<script>window.CHECKOUT_URL = "https://pay.hotmart.com/O108636593H";</script>
+
+<header class="hero">
+  <div class="in">
+    <nav class="bar" aria-label="Inicio">
+      <div class="brand"><span class="logo" aria-hidden="true">L</span>Lembra Tudo</div>
+      <nav class="langs" aria-label="Idioma / Language"><a href="../?l=pt" lang="pt" title="Português">PT</a><a href="../es/" lang="es" title="Español" aria-current="page">ES</a><a href="../en/" lang="en" title="English">EN</a><a href="../zh/" lang="zh" title="中文">中文</a></nav>
+      <a class="top-buy" data-buy href="#preco">Comprar · US$ 5</a>
+    </nav>
+
+    <div class="hero-grid">
+      <div>
+        <h1>Nunca más pagues una suscripción <em>que olvidaste.</em></h1>
+        <p class="lead">Lembra Tudo te avisa antes de que venza el streaming, la prueba gratis, la licencia de conducir, el pasaporte, la garantía del refrigerador y la cuenta de luz. Pagas una vez y trabaja para siempre.</p>
+        <div class="cta">
+          <a class="buy" data-buy href="#preco">Quiero Lembra Tudo <small>US$ 5</small></a>
+          <div class="pay"><span>Pago único</span><span>Tarjeta internacional</span><span>Garantía de 7 días</span></div>
+        </div>
+      </div>
+
+      <div class="phone" role="img" aria-label="Pantalla de la app con lo que vence en los próximos días">
+        <div class="pt"><b>Lembra Tudo</b><span>Próximos 30 días</span></div>
+        <div class="sum">
+          <div><b>US$ 38,90</b><span>suscripciones al mes</span></div>
+          <div><b>5</b><span>vencen en 30 días</span></div>
+        </div>
+        <div class="item"><div class="t"><b>Prueba gratis de app de música</b><span>Pasa a US$ 5,99/mes</span></div><span class="pill late">mañana</span></div>
+        <div class="item"><div class="t"><b>Streaming de películas</b><span>US$ 9,99 · se renueva solo</span></div><span class="pill soon">en 3 días</span></div>
+        <div class="item"><div class="t"><b>Garantía del refrigerador</b><span>Llamar a la tienda antes</span></div><span class="pill soon">en 12 días</span></div>
+        <div class="item"><div class="t"><b>Licencia de conducir</b><span>Agendar renovación</span></div><span class="pill ok">en 24 días</span></div>
+        <div class="item"><div class="t"><b>Vacuna de la gripe</b><span>Recordatorio de salud</span></div><span class="pill ok">en 29 días</span></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="math" aria-labelledby="math-t">
+    <div class="in math-grid">
+      <div class="sec-head" style="margin-bottom:0">
+        <span class="eyebrow">La cuenta es simple</span>
+        <h2 id="math-t">Se paga solo al cancelar una única suscripción olvidada.</h2>
+        <p class="lead">Casi todos tenemos un cobro que se renueva cada mes sin que nadie lo use. Elige uno y mira cuánto cuesta en un año.</p>
+        <div class="chips" role="group" aria-label="Elige una suscripción">
+          <button class="chip" id="c1" type="button" data-name="Streaming de películas" data-price="9.99" aria-pressed="true">Streaming · US$ 9,99</button>
+          <button class="chip" id="c2" type="button" data-name="App de música" data-price="5.99" aria-pressed="false">Música · US$ 5,99</button>
+          <button class="chip" id="c3" type="button" data-name="Gimnasio" data-price="30" aria-pressed="false">Gimnasio · US$ 30,00</button>
+          <button class="chip" id="c4" type="button" data-name="Almacenamiento en la nube" data-price="2.99" aria-pressed="false">Nube · US$ 2,99</button>
+        </div>
+      </div>
+      <div class="receipt" aria-live="polite">
+        <div class="row"><span>Suscripción olvidada</span><b id="r-name">Streaming de películas</b></div>
+        <div class="row"><span>Cobro mensual</span><b id="r-month">US$ 9,99</b></div>
+        <div class="row"><span>Meses sin darte cuenta</span><b>12</b></div>
+        <div class="row big"><span>Dinero tirado</span><b id="r-year">US$ 119,88</b></div>
+        <p class="verdict" id="r-verdict">Lembra Tudo cuesta US$ 5, una sola vez. Esa suscripción olvidada pagaría la app 23 veces en un año.</p>
+        <p class="note">Valores de ejemplo, en dólares.</p>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="cats-t">
+    <div class="in">
+      <div class="sec-head">
+        <span class="eyebrow">Lo que te recuerda</span>
+        <h2 id="cats-t">Todo lo que vence y nadie recuerda hasta que es tarde.</h2>
+      </div>
+      <div class="cats">
+        <div class="cat">
+          <div class="ic"><svg viewBox="0 0 24 24"><path d="M4 7h16v11H4z"/><path d="M8 3l4 4 4-4"/></svg></div>
+          <h3>Suscripciones</h3>
+          <p>Streaming, música, apps, gimnasio y pruebas gratis que se convierten en cobro. Muestra cuánto gastas al mes sumando todo.</p>
+        </div>
+        <div class="cat">
+          <div class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="12" r="2.5"/><path d="M14 10h4M14 14h4"/></svg></div>
+          <h3>Documentos</h3>
+          <p>Documento de identidad, licencia de conducir, pasaporte, visa y permiso de residencia. Te avisa con tiempo para agendar el trámite.</p>
+        </div>
+        <div class="cat">
+          <div class="ic"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg></div>
+          <h3>Garantías</h3>
+          <p>Celular, refrigerador, laptop y TV. Te recuerda antes de que termine, mientras la reparación todavía es gratis.</p>
+        </div>
+        <div class="cat">
+          <div class="ic"><svg viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg></div>
+          <h3>Cuentas</h3>
+          <p>Luz, agua, internet, impuestos y seguro del auto. Se acabaron las multas y los intereses por olvido.</p>
+        </div>
+        <div class="cat">
+          <div class="ic"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.4-7-10a4 4 0 017-2.6A4 4 0 0119 11c0 5.6-7 10-7 10z"/></svg></div>
+          <h3>Salud</h3>
+          <p>Vacunas, exámenes de rutina, dentista y recetas que hay que renovar.</p>
+        </div>
+        <div class="cat over">
+          <b>30 días</b>
+          <h3>Todo en una sola pantalla</h3>
+          <p>Al abrir la app ves lo que vence el próximo mes, de lo más urgente a lo más tranquilo.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="priv" aria-labelledby="priv-t">
+    <div class="in">
+      <div class="sec-head" style="margin-bottom:0">
+        <span class="eyebrow">Privacidad</span>
+        <h2 id="priv-t">Tus vencimientos quedan en tu celular. Solo ahí.</h2>
+        <p class="lead">No hay cuenta, contraseña ni servidor guardando lo que registras. Ni nosotros podemos verlo.</p>
+      </div>
+      <div class="priv-list">
+        <div><b>Sin registro</b><span>La abres y ya la estás usando. No pide correo.</span></div>
+        <div><b>Funciona sin internet</b><span>Una vez instalada, no necesita conexión.</span></div>
+        <div><b>Sin anuncios</b><span>Ya pagaste. Nadie te va a vender nada adentro.</span></div>
+        <div><b>Sin mensualidad</b><span>US$ 5 hoy y nada más, nunca.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="how-t">
+    <div class="in">
+      <div class="sec-head">
+        <span class="eyebrow">Cómo funciona</span>
+        <h2 id="how-t">Lista en dos minutos.</h2>
+      </div>
+      <div class="steps">
+        <div class="step"><h3>Compra con tarjeta</h3><p>El pago se hace en una página segura. El acceso llega a tu correo enseguida.</p></div>
+        <div class="step"><h3>Ponla en la pantalla de inicio</h3><p>Abre el enlace en el celular y toca "Agregar a pantalla de inicio". Queda como un ícono igual que cualquier app.</p></div>
+        <div class="step"><h3>Registra lo que vence</h3><p>Nombre, fecha y cuánto cuesta. La app te avisa antes y también envía los recordatorios al calendario de tu celular, con alarma.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="preco" aria-labelledby="price-t" style="padding-top:0">
+    <div class="in">
+      <div class="price-card">
+        <div>
+          <span class="eyebrow">Precio</span>
+          <h2 id="price-t" class="price"><sup>US$</sup>5</h2>
+          <p class="price-sub">Una vez. Para siempre. Sin renovación automática.</p>
+          <div style="margin-top:28px"><a class="buy" data-buy href="#preco">Comprar ahora <small>US$ 5</small></a></div>
+          <div class="pay"><span>Tarjeta de crédito</span><span>Tarjeta internacional</span><span>Latinoamérica y España</span></div>
+          <p class="guarantee"><b>Garantía de 7 días.</b> Si no te gusta, pide el reembolso dentro de 7 días y te devuelven el dinero.</p>
+        </div>
+        <ul class="checks">
+          <li>Avisos antes de que venzan suscripciones, documentos, garantías, cuentas y salud</li>
+          <li>Total que gastas al mes en suscripciones</li>
+          <li>Lista de lo que vence en los próximos 30 días</li>
+          <li>Recordatorios en el calendario del celular, con alarma</li>
+          <li>Funciona en Android y iPhone, sin internet</li>
+          <li>Sin registro, sin anuncios, sin mensualidad</li>
+          <li>Actualizaciones incluidas</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="faq-t" style="padding-top:0">
+    <div class="in">
+      <div class="sec-head"><span class="eyebrow">Dudas</span><h2 id="faq-t">Preguntas frecuentes</h2></div>
+      <div class="faq">
+        <details><summary>¿Tengo que descargarla de la tienda de apps?</summary><p>No. Lembra Tudo se abre directo en el navegador del celular y puedes ponerla en la pantalla de inicio con un toque. Tiene su propio ícono y se abre en pantalla completa, como una app de la tienda.</p></details>
+        <details><summary>¿Funciona en iPhone?</summary><p>Sí. Abre el enlace en Safari, toca Compartir y luego "Agregar a inicio". Para recibir avisos en iPhone, usa la app desde la pantalla de inicio o envía los recordatorios al calendario del celular.</p></details>
+        <details><summary>¿Cómo recibo los avisos?</summary><p>De dos formas. La app muestra notificaciones en el celular cuando algo está por vencer, y puedes exportar los vencimientos al calendario del celular con alarmas, que suenan aunque la app esté cerrada.</p></details>
+        <details><summary>¿Hay alguna mensualidad escondida?</summary><p>No. Son US$ 5 una sola vez. No hay plan de pago, renovación automática ni cobros futuros.</p></details>
+        <details><summary>¿Mis datos van a algún lado?</summary><p>No. Todo queda guardado en tu propio celular. No hay cuenta, inicio de sesión ni servidor con tu información.</p></details>
+        <details><summary>¿Puedo comprar desde mi país?</summary><p>Sí. El pago acepta tarjeta internacional y el valor se convierte a tu moneda al momento de la compra.</p></details>
+        <details><summary>¿Y si no me gusta?</summary><p>Tienes 7 días de garantía. Pide el reembolso en la misma plataforma de pago y te devuelven el dinero, sin preguntas.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <section class="final" aria-labelledby="final-t">
+    <div class="in">
+      <h2 id="final-t">¿Cuánto has pagado ya por algo que olvidaste cancelar?</h2>
+      <p class="lead">Por US$ 5, eso no vuelve a pasar.</p>
+      <a class="buy" data-buy href="#preco">Comprar Lembra Tudo <small>US$ 5</small></a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="in">
+    <span>© 2026 Lembra Tudo</span>
+    <span>El pago lo procesa la plataforma de pago. Ella atiende las dudas sobre la compra.</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  // Point every buy button at the checkout link
+  var url = window.CHECKOUT_URL;
+  document.querySelectorAll("[data-buy]").forEach(function(a){
+    a.href = url; a.target = "_blank"; a.rel = "noopener";
+  });
+
+  // Forgotten-subscription calculator
+  var brl = function(n){ return "US$ " + n.toFixed(2).replace(".", ","); };
+  var chips = document.querySelectorAll(".chip");
+  function pick(btn){
+    chips.forEach(function(c){ c.setAttribute("aria-pressed", c === btn ? "true" : "false"); });
+    var p = parseFloat(btn.dataset.price);
+    document.getElementById("r-name").textContent = btn.dataset.name;
+    document.getElementById("r-month").textContent = brl(p);
+    document.getElementById("r-year").textContent = brl(p * 12);
+    var times = Math.floor((p * 12) / 5);
+    document.getElementById("r-verdict").textContent = p >= 5
+      ? "Lembra Tudo cuesta US$ 5, una sola vez. Eso es menos que un solo mes de esa suscripción."
+      : "Lembra Tudo cuesta US$ 5, una sola vez. Esa suscripción olvidada pagaría la app " + times + " veces en un año.";
+  }
+  chips.forEach(function(c){ c.addEventListener("click", function(){ pick(c); }); });
+})();
+</script>
+</body>
+</html>
